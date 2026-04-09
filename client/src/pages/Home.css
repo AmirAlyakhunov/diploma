@@ -1,0 +1,18 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.page-header {
+  padding: 40px 0 20px;
+}
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+.status {
+  padding: 50px;
+  text-align: center;
+  color: #888;
+}
