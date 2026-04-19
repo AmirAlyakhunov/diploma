@@ -3,22 +3,19 @@ import supabase from './supabaseClient.js'
 
 async function importScreenshots() {
     try {
-        // 1. Получаем список папок (каждая папка = одно приложение)
-        const { data: folders, error: foldersError } = await supabase.storage
-            .from('screenshots')
-            .list('', { limit: 100 })
+        // Получаем название папки из аргумента командной строки
+        const folderName = process.argv[2]
 
-        if (foldersError) {
-            console.error('Ошибка при получении папок:', foldersError.message)
+        if (!folderName) {
+            console.error('❌ Пожалуйста, укажите название папки:')
+            console.error('   npm start <название-папки>')
+            console.error('\nПример: npm start "MyAppName"')
             return
         }
 
-        console.log('Все объекты в корне:', folders.map(f => ({ name: f.name, metadata: f.metadata })))
+        console.log(`📁 Обработка папки: ${folderName}\n`)
 
-        // Фильтруем только папки (объекты без mimetype в metadata)
-        const appFolders = folders.filter(f => !f.metadata || !f.metadata.mimetype)
-        console.log(`Найдено папок: ${appFolders.length}`)
-        console.log('Папки:', appFolders.map(f => f.name))
+        const appFolders = [{ name: folderName }]
 
         for (const folder of appFolders) {
             const appName = folder.name

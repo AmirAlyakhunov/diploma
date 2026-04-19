@@ -1,0 +1,39 @@
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
+  gap: 20px;
+  padding: 0 20px 20px;
+}
+
+.search-screenshot-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-screenshot-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 0 0 8px 8px;
+  margin-top: -8px;
+}
+
+.search-app-link {
+  color: #0070f3;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.search-app-link:hover {
+  text-decoration: underline;
+}
+
+.search-similarity {
+  font-size: 12px;
+  color: #666;
+  background: #eee;
+  padding: 4px 8px;
+  border-radius: 4px;
+}

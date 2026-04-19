@@ -5,6 +5,9 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) =>
   const [currentIndex, setCurrentIndex] = useState(selectedIndex);
   const [copyStatus, setCopyStatus] = useState('default');
 
+  // Динамическое название из текущего скриншота (для поиска)
+  const currentAppName = screenshots[currentIndex]?.apps?.name || appName;
+
   useEffect(() => {
     setCurrentIndex(selectedIndex);
     setCopyStatus('default');
@@ -89,7 +92,7 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) =>
 
       <div className="modal-window" onClick={(event) => event.stopPropagation()}>
         <div className="modal-header">
-          <h3>{appName}</h3>
+          <h3>{currentAppName}</h3>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Close modal">
             ×
           </button>
@@ -98,7 +101,7 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) =>
         <div className="modal-body">
           <img
             src={currentScreenshot.image_url}
-            alt={currentScreenshot.alt || appName}
+            alt={currentScreenshot.alt || currentAppName}
             className="modal-image"
             draggable={false}
           />

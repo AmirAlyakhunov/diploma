@@ -1,0 +1,48 @@
+.search-result-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.search-result {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.search-result:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.screenshot-wrap {
+  width: 100%;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.screenshot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.app-info {
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-info .app-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.similarity {
+  font-size: 12px;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 4px;
+}

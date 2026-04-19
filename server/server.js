@@ -1,7 +1,10 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import axios from 'axios'
 import supabase from './supabaseClient.js'
+
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:5000'
 
 const app = express()
 const corsOptions = {
@@ -101,6 +104,72 @@ app.get('/categories', async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message })
     res.json(data)
+})
+
+// 6. Поиск по текстовому описанию (CLIP)
+app.post('/search/text', async (req, res) => {
+    const { query, limit = 20 } = req.body
+
+    if (!query) {
+        return res.status(400).json({ error: 'Query is required' })
+    }
+
+    try {
+        console.log('Search query:', query)
+        
+        // 1. Получаем эмбеддинг текста от AI-сервиса
+        const aiResponse = await axios.post(`${AI_SERVICE_URL}/embed/text`, {
+            text: query
+        })
+        const embedding = aiResponse.data.embedding
+        console.log('Embedding received, length:', embedding?.length)
+        
+        // 2. Ищем похожие скриншоты через косинусное сходство
+        const { data, error } = await supabase.rpc('cosine_similarity_search', {
+            query_embedding: embedding,
+            match_count: limit
+        })
+        
+        console.log('Search results:', data?.length || 0)
+
+        if (error) return res.status(500).json({ error: error.message })
+
+        // 3. Получаем данные скриншотов
+        if (!data || data.length === 0) {
+            return res.json([])
+        }
+
+        const screenshotIds = data.map(item => item.screenshot_id)
+
+        const { data: screenshots, error: screenshotsError } = await supabase
+            .from('screenshots')
+            .select(`
+                id,
+                image_url,
+                app_id,
+                apps ( id, name, logo_url )
+            `)
+            .in('id', screenshotIds)
+
+        if (screenshotsError) return res.status(500).json({ error: screenshotsError.message })
+
+        // 4. Сортируем в порядке сходства
+        const sortedScreenshots = screenshotIds.map(id => 
+            screenshots.find(s => s.id === id)
+        ).filter(Boolean)
+
+        // 5. Добавляем similarity score
+        const result = sortedScreenshots.map((screenshot, index) => ({
+            ...screenshot,
+            similarity: data.find(d => d.screenshot_id === screenshot.id)?.similarity || 0
+        }))
+
+        res.json(result)
+
+    } catch (err) {
+        console.error('Search error:', err.message)
+        res.status(500).json({ error: err.message })
+    }
 })
 
 const PORT = process.env.PORT || 3000
