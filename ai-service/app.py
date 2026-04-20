@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import CLIPProcessor, CLIPModel
+from deep_translator import GoogleTranslator
 import torch
 import numpy as np
 from PIL import Image
@@ -8,6 +9,9 @@ import io
 
 app = Flask(__name__)
 CORS(app)
+
+# Инициализация переводчика
+translator = GoogleTranslator(source='auto', target='en')
 
 # Загрузка модели CLIP при старте
 MODEL_NAME = "openai/clip-vit-base-patch32"
@@ -28,8 +32,16 @@ def embed_text():
     if not text:
         return jsonify({'error': 'Text is required'}), 400
     
+    # Перевод текста на английский для лучшей работы с CLIP
+    try:
+        translated = translator.translate(text)
+        print(f"Original: {text} -> Translated: {translated}")
+    except Exception as e:
+        print(f"Translation error: {e}, using original text")
+        translated = text
+    
     # Токенизация и получение эмбеддинга
-    inputs = processor(text=[text], return_tensors="pt", padding=True)
+    inputs = processor(text=[translated], return_tensors="pt", padding=True)
     
     with torch.no_grad():
         text_features = model.get_text_features(**inputs)

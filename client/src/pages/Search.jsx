@@ -50,6 +50,16 @@ const Search = () => {
   const query = new URLSearchParams(location.search).get('q');
 
   useEffect(() => {
+    // Проверяем, есть ли результаты поиска по изображению в state
+    const imageResults = location.state?.imageResults;
+    if (imageResults) {
+      setResults(imageResults);
+      setLoading(false);
+      // Очищаем state чтобы при обновлении страницы не использовать старые данные
+      window.history.replaceState({}, document.title);
+      return;
+    }
+
     const doSearch = async () => {
       if (!query) {
         setResults([]);
@@ -74,7 +84,7 @@ const Search = () => {
     };
 
     doSearch();
-  }, [query]);
+  }, [query, location.state]);
 
   return (
     <div className="container">
