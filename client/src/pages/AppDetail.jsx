@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import AppScreenshotModal from '../components/AppScreenshotModal';
+import { exportScreenshotsToZip } from '../utils/exportScreenshots';
 import './AppDetail.css';
 
 const AppDetail = () => {
@@ -9,6 +10,8 @@ const AppDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalIndex, setModalIndex] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState(null);
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -28,6 +31,22 @@ const AppDetail = () => {
     fetchApp();
   }, [id]);
 
+  const handleExport = async () => {
+    if (!app?.screenshots?.length) return;
+    
+    setIsExporting(true);
+    setExportError(null);
+    
+    try {
+      await exportScreenshotsToZip(app.screenshots, app.name);
+    } catch (error) {
+      console.error('Export failed:', error);
+      setExportError(error.message);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (loading) return <div className="container">Loading...</div>;
   if (error) return <div className="container">Error: {error}</div>;
   if (!app) return <div className="container">App not found</div>;
@@ -43,6 +62,29 @@ const AppDetail = () => {
             <a href={app.website_url} target="_blank" rel="noopener noreferrer">
               Visit Website
             </a>
+          )}
+        </div>
+        
+        <div className="export-container">
+          <button
+            className="export-button"
+            onClick={handleExport}
+            disabled={isExporting || !app?.screenshots?.length}
+            aria-label="Экспортировать скриншоты"
+          >
+            {isExporting ? (
+              <>
+                <span className="export-spinner"></span>
+                Экспорт...
+              </>
+            ) : (
+              'Экспорт'
+            )}
+          </button>
+          {exportError && (
+            <div className="export-error">
+              Ошибка: {exportError}
+            </div>
           )}
         </div>
       </header>

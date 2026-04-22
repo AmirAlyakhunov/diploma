@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AppCard from '../components/AppCard.jsx';
 import SearchResult from '../components/SearchResult.jsx';
+import SegmentBox from '../components/SegmentBox.jsx';
 import './Home.css';
 
 const Home = ({ platformSlug, title }) => {
@@ -43,9 +44,8 @@ const Home = ({ platformSlug, title }) => {
 
   return (
     <div className="container">
-      <header className="page-header">
-        <h1>{searchQuery ? `Результаты поиска: "${searchQuery}"` : title}</h1>
-      </header>
+
+      {!searchQuery && <SegmentBox activePlatform={platformSlug} />}
 
       {loading ? (
         <div className="status">Загрузка...</div>

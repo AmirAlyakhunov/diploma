@@ -1,8 +1,8 @@
-/* global reset and minimal base styles */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: "Google Sans", sans-serif;
   background-color: #141314;
   color: #e6e1e3;
 }
@@ -16,7 +16,3 @@ a {
   text-decoration: none;
 }
 
-.app-container {
-  padding: 2rem;
-  text-align: center;
-}
