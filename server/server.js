@@ -30,7 +30,8 @@ app.get('/apps', async (req, res) => {
             description,
             logo_url,
             screenshots ( image_url ),
-            app_platforms!inner ( platforms!inner ( slug ) )
+            app_platforms!inner ( platforms!inner ( slug ) ),
+            app_categories ( categories ( slug, label ) )
         `)
         .order('created_at', { ascending: false });
 

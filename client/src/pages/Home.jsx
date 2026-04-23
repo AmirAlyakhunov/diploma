@@ -8,8 +8,23 @@ import './Home.css';
 const Home = ({ platformSlug, title }) => {
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/categories');
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchApps = async () => {
@@ -42,19 +57,39 @@ const Home = ({ platformSlug, title }) => {
     fetchApps();
   }, [platformSlug, searchQuery]);
 
-  return (
-    <div className="container">
+  const handleCategoryChange = (slug) => {
+    setSelectedCategory(slug);
+  };
 
-      {!searchQuery && <SegmentBox activePlatform={platformSlug} />}
+  // Filter apps by selected category (only when not searching)
+  const filteredApps = searchQuery
+    ? apps
+    : selectedCategory
+    ? apps.filter(app =>
+        app.app_categories?.some(ac => ac.categories?.slug === selectedCategory)
+      )
+    : apps;
+
+  return (
+    <div className="home-container">
+
+      {!searchQuery && (
+        <SegmentBox
+          activePlatform={platformSlug}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={handleCategoryChange}
+        />
+      )}
 
       {loading ? (
         <div className="status">Загрузка...</div>
       ) : (
         <div className="apps-grid">
-          {apps.length > 0 ? (
-            searchQuery 
-              ? apps.map(screenshot => <SearchResult key={screenshot.id} screenshot={screenshot} />)
-              : apps.map(app => <AppCard key={app.id} app={app} />)
+          {filteredApps.length > 0 ? (
+            searchQuery
+              ? filteredApps.map(screenshot => <SearchResult key={screenshot.id} screenshot={screenshot} />)
+              : filteredApps.map(app => <AppCard key={app.id} app={app} />)
           ) : (
             <div className="status">
               {searchQuery ? 'Ничего не найдено' : 'Приложений для этой платформы пока нет'}

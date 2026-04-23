@@ -1,14 +1,14 @@
-.container {
+.home-container {
   margin: 0 auto;
   padding: 24px;
 }
 .page-header {
-  padding: 40px 0 20px;
+  padding: 40px 0 24px;
 }
 .apps-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
-  gap: 20px;
+  gap: 12px;
 }
 .status {
   padding: 50px;

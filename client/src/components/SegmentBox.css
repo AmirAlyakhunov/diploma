@@ -1,13 +1,13 @@
 /* Segmentbox styles */
 .segmentbox-container {
   display: flex;
-  padding: 20px;
+  padding: 24px 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   align-self: stretch;
   position: sticky;
+  gap: 12px;
   top: 0px;
   background: #141314;
   z-index: 9;
@@ -17,24 +17,27 @@
   display: flex;
   align-items: flex-start;
   border-radius: 100px;
-  background: #1C1B1D;
+  gap: 32px;
 }
 
 .segmentbox-tab {
   display: flex;
-  height: 64px;
-  min-width: 120px;
-  padding: 10px 24px;
+  height: 56px;
+  min-width: 80px;
   justify-content: center;
   align-items: center;
-  border-radius: 1000px;
   text-decoration: none;
+  font-size: 56px;
   font-weight: 500;
   transition: background-color 0.2s;
+  opacity: 50%;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .segmentbox-tab.active {
-  background: #45455A;
+  opacity: 100%;
+  color: #e2e0fb;
 }
 
 .segmentbox-tab:not(.active) {
@@ -42,5 +45,5 @@
 }
 
 .segmentbox-tab:not(.active):hover {
-  background: rgba(255, 255, 255, 0.05);
+  opacity: 100%;
 }

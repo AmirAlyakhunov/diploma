@@ -1,5 +1,5 @@
 .navbar {
-  padding: 20px;
+  padding: 24px;
   display: flex;
   gap: 20px;
   align-items: center;
@@ -38,7 +38,7 @@
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ddd;
-  min-width: 200px;
+  width: 1200px;
 }
 
 .navbar-search-button {

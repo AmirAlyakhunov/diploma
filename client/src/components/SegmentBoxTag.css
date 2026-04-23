@@ -1,0 +1,42 @@
+/* Tag group styles */
+.segmentbox-tags-container {
+  width: 100%;
+  overflow-x: auto;
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+}
+
+
+.segmentbox-tags {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.segmentbox-tag {
+  display: flex;
+  color: inherit;
+  height: 56px;
+  min-width: 80px;
+  padding: 0 16px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1000px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.segmentbox-tag.active {
+  background: #45455A;
+  color: #e2e0fb;
+}
+
+.segmentbox-tag:not(.active):hover {
+  background: rgba(255, 255, 255, 0.05);
+}
