@@ -243,6 +243,34 @@ app.post('/search/text', async (req, res) => {
     }
 })
 
+// 8. Поиск приложений по тексту
+app.get('/search/apps', async (req, res) => {
+    const { query, limit = 10 } = req.query
+
+    if (!query) {
+        return res.status(400).json({ error: 'Query is required' })
+    }
+
+    try {
+        console.log('Searching apps for query:', query)
+        const { data, error } = await supabase
+            .from('apps')
+            .select('id, name, description, logo_url')
+            .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+            .limit(limit)
+
+        if (error) {
+            console.error('Supabase error:', error)
+            return res.status(500).json({ error: error.message })
+        }
+        console.log('Found apps:', data.length)
+        res.json(data)
+    } catch (err) {
+        console.error('App search error:', err.message)
+        res.status(500).json({ error: err.message })
+    }
+})
+
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)

@@ -7,9 +7,9 @@
   align-items: center;
   align-self: stretch;
   position: sticky;
-  gap: 12px;
+  gap: 16px;
   top: 0px;
-  background: #141314;
+  background: #121212;
   z-index: 9;
 }
 
@@ -33,6 +33,7 @@
   opacity: 50%;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: 0.3s ease, transform 0.3s ease;
 }
 
 .segmentbox-tab.active {

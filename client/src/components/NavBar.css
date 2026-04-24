@@ -1,10 +1,11 @@
 .navbar {
-  padding: 24px;
+  padding: 24px 24px 0 56px;
   display: flex;
-  gap: 20px;
+  gap: 8px;
   align-items: center;
+  justify-content: center;
   font-weight: 500;
-  background-color: #141314;
+  background-color: #121212;
 }
 
 .navbar-file-input {
@@ -12,20 +13,23 @@
 }
 
 .navbar-upload-button {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  background: #fff;
+height: 56px;
+width: 56px;
+display: flex;
+align-items: center;
+justify-content: center;
+  border-radius: 200px;
+    border: none;
+  background: #1C1B1D;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
   font-weight: 500;
+  transition: 0.3s ease, transform 0.3s ease;
 }
-
-.navbar-upload-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+.navbar-upload-button:hover {
+  background: #45455B;
 }
 
 .navbar-search-form {
@@ -35,10 +39,29 @@
 }
 
 .navbar-search-input {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  width: 1200px;
+    color: #e6e1e3;
+    padding: 0 16px;
+  font-size: 16px;
+  transition: 0.3s ease, transform 0.3s ease;
+  height: 56px;
+  border-radius: 1000px;
+  border: none;
+  width: 520px;
+  cursor: pointer;
+  background: #1C1B1D;
+  text-align: center;
+}
+
+.navbar-search-input::placeholder {
+  color: #e6e1e3;
+}
+
+.navbar-search-input:hover {
+  background: #45455B;
+}
+
+.navbar-search-input:focus {
+  outline: none;
 }
 
 .navbar-search-button {
@@ -49,4 +72,42 @@
   color: white;
   cursor: pointer;
   font-weight: 500;
+}
+
+/* Контейнер для поиска с иконкой */
+.navbar-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Иконка поиска внутри контейнера */
+.navbar-search-icon {
+  position: absolute;
+  left: 16px;
+  color: #e6e1e3;
+  font-size: 28px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Стили для Material Symbols иконок */
+.navbar-upload-button .material-symbols-rounded {
+  color: #e6e1e3;
+  font-size: 28px;
+}
+
+/* Обновленный input с отступом для иконки */
+.navbar-search-input {
+  color: #e6e1e3;
+  padding: 0 16px 0 48px; /* Больше padding слева для иконки */
+  font-size: 16px;
+  transition: 0.3s ease, transform 0.3s ease;
+  height: 56px;
+  border-radius: 1000px;
+  border: none;
+  width: 520px;
+  cursor: pointer;
+  background: #1C1B1D;
+  text-align: center;
 }

@@ -1,19 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageUploadModal from './ImageUploadModal';
+import SearchModal from './SearchModal';
 import './NavBar.css';
 
 const NavBar = () => {
-  const [searchQuery, setSearchQuery] = useState('');
   const [showImageModal, setShowImageModal] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const navigate = useNavigate();
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
 
   const handleImageSearch = async (imageFile) => {
     try {
@@ -37,32 +31,39 @@ const NavBar = () => {
   return (
     <>
       <nav className="navbar">
+        <div className="navbar-search-container">
+          <span className="material-symbols-rounded navbar-search-icon">
+            search
+          </span>
+          <input
+            type="text"
+            placeholder="Найти приложение или скриншот"
+            onClick={() => setShowSearchModal(true)}
+            className="navbar-search-input"
+            readOnly
+          />
+        </div>
         <button
           onClick={() => setShowImageModal(true)}
           className="navbar-upload-button"
         >
-          📷 Поиск по фото
+          <span className="material-symbols-rounded">
+ photo_camera
+ </span>
         </button>
 
-        <form onSubmit={handleSearch} className="navbar-search-form">
-          <input
-            type="text"
-            placeholder="Поиск..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="navbar-search-input"
-          />
-          <button type="submit" className="navbar-search-button">
-            Поиск
-          </button>
-        </form>
-      </nav>
+        <ImageUploadModal
+          isOpen={showImageModal}
+          onClose={() => setShowImageModal(false)}
+          onSearch={handleImageSearch}
+        />
 
-      <ImageUploadModal 
-        isOpen={showImageModal} 
-        onClose={() => setShowImageModal(false)}
-        onSearch={handleImageSearch}
-      />
+        <SearchModal
+          show={showSearchModal}
+          onClose={() => setShowSearchModal(false)}
+          onSmartSearch={(q) => navigate(`/search?q=${encodeURIComponent(q)}`)}
+        />
+      </nav>
     </>
   );
 };
