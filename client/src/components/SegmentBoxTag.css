@@ -34,9 +34,8 @@
 
 .segmentbox-tag.active {
   background: #45455A;
-  color: #e2e0fb;
 }
 
 .segmentbox-tag:not(.active):hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: #1C1B1D;
 }

@@ -1,5 +1,5 @@
 .navbar {
-  padding: 24px 24px 0 56px;
+  padding: 24px 24px 24px 56px;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -39,7 +39,7 @@ justify-content: center;
 }
 
 .navbar-search-input {
-    color: #e6e1e3;
+    color: #E6DFE2;
     padding: 0 16px;
   font-size: 16px;
   transition: 0.3s ease, transform 0.3s ease;
@@ -53,7 +53,7 @@ justify-content: center;
 }
 
 .navbar-search-input::placeholder {
-  color: #e6e1e3;
+  color: #E6DFE2;
 }
 
 .navbar-search-input:hover {
@@ -85,7 +85,7 @@ justify-content: center;
 .navbar-search-icon {
   position: absolute;
   left: 16px;
-  color: #e6e1e3;
+  color: #E6DFE2;
   font-size: 28px;
   z-index: 1;
   pointer-events: none;
@@ -93,13 +93,13 @@ justify-content: center;
 
 /* Стили для Material Symbols иконок */
 .navbar-upload-button .material-symbols-rounded {
-  color: #e6e1e3;
+  color: #E6DFE2;
   font-size: 28px;
 }
 
 /* Обновленный input с отступом для иконки */
 .navbar-search-input {
-  color: #e6e1e3;
+  color: #E6DFE2;
   padding: 0 16px 0 48px; /* Больше padding слева для иконки */
   font-size: 16px;
   transition: 0.3s ease, transform 0.3s ease;

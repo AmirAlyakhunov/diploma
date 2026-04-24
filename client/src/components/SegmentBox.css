@@ -38,7 +38,6 @@
 
 .segmentbox-tab.active {
   opacity: 100%;
-  color: #e2e0fb;
 }
 
 .segmentbox-tab:not(.active) {
