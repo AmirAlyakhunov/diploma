@@ -1,5 +1,5 @@
 .navbar {
-  padding: 24px 24px 24px 56px;
+  padding: 24px 24px 24px 24px;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -64,16 +64,6 @@ justify-content: center;
   outline: none;
 }
 
-.navbar-search-button {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: none;
-  background: #0070f3;
-  color: white;
-  cursor: pointer;
-  font-weight: 500;
-}
-
 /* Контейнер для поиска с иконкой */
 .navbar-search-container {
   position: relative;
@@ -84,7 +74,7 @@ justify-content: center;
 /* Иконка поиска внутри контейнера */
 .navbar-search-icon {
   position: absolute;
-  left: 16px;
+  left: 148px;
   color: #E6DFE2;
   font-size: 28px;
   z-index: 1;

@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import AppScreenshotModal from '../components/AppScreenshotModal';
 import { exportScreenshotsToZip } from '../utils/exportScreenshots';
 import './AppDetail.css';
 
 const AppDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [app, setApp] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,43 +55,65 @@ const AppDetail = () => {
   return (
     <div className="container">
       <header className="app-header">
-        <img src={app.logo_url} alt={app.name} className="app-logo" />
-        <div className="app-info">
-          <h1>{app.name}</h1>
-          <p>{app.description}</p>
-          {app.website_url && (
-            <a href={app.website_url} target="_blank" rel="noopener noreferrer">
-              Visit Website
-            </a>
-          )}
-        </div>
-        
-        <div className="export-container">
-          <button
-            className="export-button"
-            onClick={handleExport}
-            disabled={isExporting || !app?.screenshots?.length}
-            aria-label="Экспортировать скриншоты"
-          >
-            {isExporting ? (
-              <>
-                <span className="export-spinner"></span>
-                Экспорт...
-              </>
-            ) : (
-              'Экспорт'
-            )}
+        <div className="app-header-left">
+          <button className="back-button" onClick={() => navigate(-1)} aria-label="Назад">
+            <span className="material-symbols-rounded">
+              arrow_back
+            </span>
           </button>
-          {exportError && (
-            <div className="export-error">
-              Ошибка: {exportError}
+        </div>
+
+        <div className="app-header-center">
+          <img src={app.logo_url} alt={app.name} className="app-logo" />
+          <div className="app-info">
+            <h1>{app.name}</h1>
+            <p>{app.description}</p>
+            <div className="app-meta">
+              {app.app_categories?.map((cat, idx) => (
+                <span key={idx} className="app-meta-item">
+                  {cat.categories?.label}
+                </span>
+              ))}
+              {app.app_platforms?.map((plat, idx) => (
+                <span key={idx} className="app-meta-item">
+                  {plat.platforms?.label}
+                </span>
+              ))}
             </div>
-          )}
+          </div>
+        </div>
+
+        <div className="app-header-right">
+            <a href={app.website_url} target="_blank" rel="noopener noreferrer" className='back-button'>
+               <>
+                  <span className="material-symbols-rounded">arrow_outward</span>
+                </>
+            </a>
+            <button
+              className="export-button"
+              onClick={handleExport}
+              disabled={isExporting || !app?.screenshots?.length}
+              aria-label="Экспортировать скриншоты"
+            >
+              {isExporting ? (
+                <>
+                  <span className="export-spinner"></span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-rounded">download</span>
+                </>
+              )}
+            </button>
+            {exportError && (
+              <div className="export-error">
+                Ошибка: {exportError}
+              </div>
+            )}
         </div>
       </header>
 
       <section className="screenshots-section">
-        <h2>Screenshots</h2>
         <div className="screenshots-grid">
           {app.screenshots.map((screenshot, index) => (
             <LazyImage

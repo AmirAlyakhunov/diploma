@@ -20,24 +20,46 @@ app.use(express.json())
 
 // 1. Получение списка приложений (с обязательным фильтром по платформе)
 app.get('/apps', async (req, res) => {
-    const { platform } = req.query; // Ожидаем ?platform=web или ios или android
+    const { platform, limit = 20, offset = 0, category } = req.query; // Добавлены limit, offset, category
 
-    let query = supabase
-        .from('apps')
-        .select(`
+    // Build select statement dynamically based on whether we're filtering by category
+    let selectStatement = `
+        id,
+        name,
+        description,
+        logo_url,
+        screenshots ( image_url ),
+        app_platforms!inner ( platforms!inner ( slug ) ),
+        app_categories ( categories ( slug, label ) )
+    `;
+    
+    // If filtering by category, we need to use !inner to ensure apps have that category
+    if (category) {
+        selectStatement = `
             id,
             name,
             description,
             logo_url,
             screenshots ( image_url ),
             app_platforms!inner ( platforms!inner ( slug ) ),
-            app_categories ( categories ( slug, label ) )
-        `)
-        .order('created_at', { ascending: false });
+            app_categories!inner ( categories!inner ( slug, label ) )
+        `;
+    }
+
+    let query = supabase
+        .from('apps')
+        .select(selectStatement)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1); // Пагинация
 
     // Если платформа передана (а фронт ее будет передавать), фильтруем
     if (platform) {
         query = query.eq('app_platforms.platforms.slug', platform);
+    }
+
+    // Фильтр по категории
+    if (category) {
+        query = query.eq('app_categories.categories.slug', category);
     }
 
     const { data, error } = await query;
@@ -179,7 +201,7 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
 
 // 7. Поиск по текстовому описанию (CLIP)
 app.post('/search/text', async (req, res) => {
-    const { query, limit = 20 } = req.body
+    const { query, limit = 20, offset = 0 } = req.body
 
     if (!query) {
         return res.status(400).json({ error: 'Query is required' })
@@ -198,7 +220,7 @@ app.post('/search/text', async (req, res) => {
         // 2. Ищем похожие скриншоты через косинусное сходство
         const { data, error } = await supabase.rpc('cosine_similarity_search', {
             query_embedding: embedding,
-            match_count: limit
+            match_count: limit + offset
         })
         
         console.log('Search results:', data?.length || 0)
@@ -210,7 +232,7 @@ app.post('/search/text', async (req, res) => {
             return res.json([])
         }
 
-        const screenshotIds = data.map(item => item.screenshot_id)
+        const screenshotIds = data.slice(offset).map(item => item.screenshot_id) // Slice from offset
 
         const { data: screenshots, error: screenshotsError } = await supabase
             .from('screenshots')
@@ -232,7 +254,7 @@ app.post('/search/text', async (req, res) => {
         // 5. Добавляем similarity score
         const result = sortedScreenshots.map((screenshot, index) => ({
             ...screenshot,
-            similarity: data.find(d => d.screenshot_id === screenshot.id)?.similarity || 0
+            similarity: data.slice(offset)[index]?.similarity || 0
         }))
 
         res.json(result)

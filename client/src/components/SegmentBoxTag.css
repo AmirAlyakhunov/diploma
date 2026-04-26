@@ -39,3 +39,12 @@
 .segmentbox-tag:not(.active):hover {
   background: #1C1B1D;
 }
+
+@media (max-width: 1200px) {
+  .segmentbox-tags {
+  display: flex;
+  align-items: start;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+}
