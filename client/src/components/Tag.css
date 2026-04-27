@@ -1,0 +1,112 @@
+/* Tag component - filled background version */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+   height: 56px;
+  min-width: 80px;
+  padding: 0 16px;
+  border-radius: 1000px;
+  box-sizing: border-box;
+  border: none;
+  background: #1C1B1D;
+  color: #E6DFE2;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  white-space: nowrap;
+  text-decoration: none;
+  user-select: none;
+}
+
+/* Wrapper for resource tag with dropdown */
+.tag-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tag:hover {
+  background: #45455B;
+}
+
+.tag:active {
+  transform: translateY(0);
+}
+
+.tag--platform {
+  background: #1C1B1D;
+}
+
+.tag--category {
+  background: #1C1B1D;
+}
+
+.tag--resources {
+  padding: 0 8px 0 16px;
+  background: #1C1B1D;
+  position: relative;
+}
+
+.tag--resources:hover {
+  background: #45455B;
+}
+
+/* Dropdown menu for resources tag */
+.tag-dropdown {
+  position: absolute;
+  top: 100%;
+  margin-top: 8px;
+  background: #1C1B1D;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  width: fit-content;
+  min-width: 240px;
+  max-width: 400px;
+  z-index: 9999;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tag-dropdown-item {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 20px 0 16px;
+  font-size: 16px;
+  color: #E6DFE2;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  gap: 12px;
+}
+.tag-dropdown-item .material-symbols-rounded{
+  font-size: 28px;
+}
+
+.tag-dropdown-item:hover {
+  background: #3A3A4A;
+}
+
+.tag-dropdown-item-icon {
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag-dropdown-item-label {
+  flex: 1;
+}
+
+.tag-dropdown-item-arrow {
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.tag .material-symbols-rounded{
+  font-size: 28px;
+}

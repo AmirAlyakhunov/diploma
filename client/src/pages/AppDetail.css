@@ -7,7 +7,6 @@
   flex-direction: row;
   padding: 48px 24px 24px 24px;
   box-sizing: border-box;
-  gap: 24px;
 }
 
 .app-header-left {
@@ -20,10 +19,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   flex: 1;
   justify-content: center;
-  padding-left: 80px;
 }
 
 .app-header-right {
@@ -55,30 +53,11 @@ background: #1C1B1D;
   color: #E6DFE2;
 }
 
-.app-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .app-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.app-meta a,
-.app-meta-item {
-  font-size: 24px;
-  color: inherit;
-  opacity: .5;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.app-meta a:hover {
-  background-color: #3a3a3a;
-  text-decoration: none;
+  gap: 8px;
+  padding: 8px 0;
 }
 
 .app-logo {
@@ -103,7 +82,8 @@ background: #1C1B1D;
   margin: auto;
   text-align: center;
   font-size: 24px;
-  margin-bottom: 8px;
+  padding-top: 8px;
+  margin-bottom: 10px;
 }
 
 .screenshots-section {
@@ -176,7 +156,7 @@ background: #1C1B1D;
   width: 80px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -188,7 +168,7 @@ background: #1C1B1D;
 }
 
 .export-button:hover:not(:disabled) {
-  background-color: #553f5d;
+  background-color: #7a5cf3;
 }
 
 .export-button:disabled {

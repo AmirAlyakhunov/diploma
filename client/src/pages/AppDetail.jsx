@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AppScreenshotModal from '../components/AppScreenshotModal';
 import { exportScreenshotsToZip } from '../utils/exportScreenshots';
+import Tag from '../components/Tag';
+import { getPlatformUrl, getCategoryUrl } from '../utils/tagNavigation';
 import './AppDetail.css';
 
 const AppDetail = () => {
@@ -68,27 +70,62 @@ const AppDetail = () => {
           <div className="app-info">
             <h1>{app.name}</h1>
             <p>{app.description}</p>
-            <div className="app-meta">
-              {app.app_categories?.map((cat, idx) => (
-                <span key={idx} className="app-meta-item">
-                  {cat.categories?.label}
-                </span>
-              ))}
-              {app.app_platforms?.map((plat, idx) => (
-                <span key={idx} className="app-meta-item">
-                  {plat.platforms?.label}
-                </span>
-              ))}
+            <div className="app-meta tags-container">
+              {/* Platform tags */}
+              {app.app_platforms?.map((plat, idx) => {
+                const platformLabel = plat.platforms?.label;
+                const platformSlug = plat.platforms?.slug || platformLabel?.toLowerCase();
+                return (
+                  <Tag
+                    key={`platform-${idx}`}
+                    label={platformLabel}
+                    type="platform"
+                    href={`/${platformSlug}`}
+                    size="medium"
+                  />
+                );
+              })}
+              
+              {/* Category tags */}
+              {app.app_categories?.map((cat, idx) => {
+                const categoryLabel = cat.categories?.label;
+                const categorySlug = cat.categories?.slug || categoryLabel?.toLowerCase().replace(/\s+/g, '-');
+                // Determine platform for category URL
+                const platform = app.app_platforms?.[0]?.platforms?.slug ||
+                                 app.app_platforms?.[0]?.platforms?.label?.toLowerCase() ||
+                                 'web';
+                return (
+                  <Tag
+                    key={`category-${idx}`}
+                    label={categoryLabel}
+                    type="category"
+                    href={`/${platform}/${categorySlug}`}
+                    size="medium"
+                  />
+                );
+              })}
+              
+              {/* Resources tag (if website exists) */}
+              {app.website_url && (
+                <Tag
+                  label="Ссылки"
+                  type="resources"
+                  isResource={true}
+                  size="medium"
+                  resourceLinks={[
+                    {
+                      label: `${app.website_url}`,
+                      url: app.website_url,
+                      icon: 'globe'
+                    }
+                  ]}
+                />
+              )}
             </div>
           </div>
         </div>
 
         <div className="app-header-right">
-            <a href={app.website_url} target="_blank" rel="noopener noreferrer" className='back-button'>
-               <>
-                  <span className="material-symbols-rounded">arrow_outward</span>
-                </>
-            </a>
             <button
               className="export-button"
               onClick={handleExport}

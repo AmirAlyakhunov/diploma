@@ -128,7 +128,7 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .dot.active {
@@ -155,7 +155,7 @@
   cursor: pointer;
   color: white;
   z-index: 2;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
   opacity: 0.9;
 }
 
