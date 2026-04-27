@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import AppCard from '../components/AppCard.jsx';
 import SearchResult from '../components/SearchResult.jsx';
 import SegmentBox from '../components/SegmentBox.jsx';
@@ -12,10 +12,11 @@ const Home = ({ platformSlug, title }) => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchParams] = useSearchParams();
+  const { category: urlCategory } = useParams();
   const searchQuery = searchParams.get('search');
   const sentinelRef = useRef();
+  const navigate = useNavigate();
 
   const limit = 20; // Количество приложений на страницу
 
@@ -55,7 +56,7 @@ const Home = ({ platformSlug, title }) => {
         setHasMore(data.length === limit);
       } else {
         // Обычная загрузка приложений
-        url = `/apps?platform=${platformSlug}&limit=${limit}&offset=${pageNum * limit}${selectedCategory ? `&category=${selectedCategory}` : ''}`;
+        url = `/apps?platform=${platformSlug}&limit=${limit}&offset=${pageNum * limit}${urlCategory ? `&category=${urlCategory}` : ''}`;
         const response = await fetch(url);
         const data = await response.json();
         if (append) {
@@ -71,16 +72,20 @@ const Home = ({ platformSlug, title }) => {
       if (append) setLoadingMore(false);
       else setLoading(false);
     }
-  }, [platformSlug, searchQuery, selectedCategory, limit]);
+  }, [platformSlug, searchQuery, urlCategory, limit]);
 
   useEffect(() => {
     setPage(0);
     setHasMore(true);
     fetchApps(0, false);
-  }, [platformSlug, searchQuery, selectedCategory, fetchApps]);
+  }, [platformSlug, searchQuery, urlCategory, fetchApps]);
 
   const handleCategoryChange = (slug) => {
-    setSelectedCategory(slug);
+    if (slug) {
+      navigate(`/${platformSlug}/${slug}`);
+    } else {
+      navigate(`/${platformSlug}`);
+    }
   };
 
   const observerRef = useRef();
@@ -117,7 +122,7 @@ const Home = ({ platformSlug, title }) => {
         <SegmentBox
           activePlatform={platformSlug}
           categories={categories}
-          selectedCategory={selectedCategory}
+          selectedCategory={urlCategory}
           onCategoryChange={handleCategoryChange}
         />
       )}
