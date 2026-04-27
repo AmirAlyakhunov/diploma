@@ -174,7 +174,7 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
                 id,
                 image_url,
                 app_id,
-                apps ( id, name, logo_url )
+                apps ( id, name, logo_url, description )
             `)
             .in('id', screenshotIds)
 
@@ -240,7 +240,7 @@ app.post('/search/text', async (req, res) => {
                 id,
                 image_url,
                 app_id,
-                apps ( id, name, logo_url )
+                apps ( id, name, logo_url, description )
             `)
             .in('id', screenshotIds)
 

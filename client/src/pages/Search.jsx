@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import AppScreenshotModal from '../components/AppScreenshotModal';
 import './Search.css';
 
@@ -46,6 +46,7 @@ const Search = () => {
   const [loading, setLoading] = useState(true);
   const [modalIndex, setModalIndex] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
   
   const query = new URLSearchParams(location.search).get('q');
 
@@ -86,39 +87,86 @@ const Search = () => {
     doSearch();
   }, [query, location.state]);
 
+  // Группируем скриншоты по приложению
+  const groupedByApp = results.reduce((acc, screenshot) => {
+    const appId = screenshot.apps?.id;
+    if (!appId) return acc;
+    if (!acc[appId]) {
+      acc[appId] = {
+        app: screenshot.apps,
+        screenshots: []
+      };
+    }
+    acc[appId].screenshots.push(screenshot);
+    return acc;
+  }, {});
+
+  // Преобразуем в массив и сортируем по максимальному сходству (чтобы самые релевантные приложения были выше)
+  const groupedArray = Object.values(groupedByApp).map(group => ({
+    ...group,
+    maxSimilarity: Math.max(...group.screenshots.map(s => s.similarity))
+  })).sort((a, b) => b.maxSimilarity - a.maxSimilarity);
+
   return (
     <div className="container">
-      <header className="page-header">
-        <h1>Результаты поиска: "{query}"</h1>
+      <header className="search-header">
+        <div className="search-header-left">
+          <button className="back-button" onClick={() => navigate(-1)} aria-label="Назад">
+            <span className="material-symbols-rounded">
+              arrow_back
+            </span>
+          </button>
+        </div>
+
+        <div className="search-header-center">
+          <h1 className="search-title">Результаты поиска<br></br>«{query}»</h1>
+        </div>
+
+        <div className="search-header-right">
+          {/* Optional right side content */}
+        </div>
       </header>
 
       <section className="screenshots-section">
-        <h2>Screenshots</h2>
-        <div className="screenshots-grid">
-          {loading ? (
-            <div className="status">Поиск...</div>
-          ) : results.length > 0 ? (
-            results.map((screenshot, index) => (
-              <div key={screenshot.id} className="search-screenshot-wrapper">
-                <LazyImage
-                  src={screenshot.image_url}
-                  alt={screenshot.apps?.name || 'Screenshot'}
-                  onClick={() => setModalIndex(index)}
-                />
-                <div className="search-screenshot-info">
-                  <Link to={`/app/${screenshot.apps?.id}`} className="search-app-link">
-                    {screenshot.apps?.name}
-                  </Link>
-                  <span className="search-similarity">
-                    Сходство: {Math.round(screenshot.similarity * 100)}%
-                  </span>
+        {loading ? (
+          <div className="status">Поиск...</div>
+        ) : results.length > 0 ? (
+          <div className="search-results-grouped">
+            {groupedArray.map((group) => (
+              <div key={group.app.id} className="app-group">
+                {/* Блок приложения (ссылка) */}
+                <Link to={`/app/${group.app.id}`} className="search-app-info-row-link">
+                  <div className="search-app-info-row">
+                    <img src={group.app.logo_url} alt="" className="search-app-logo" />
+                    <div className="search-app-text-container">
+                      <h3 className="search-app-name">{group.app.name}</h3>
+                      <p className="search-app-desc">{group.app.description || ''}</p>
+                    </div>
+                  </div>
+                </Link>
+
+                {/* Сетка скриншотов этого приложения */}
+                <div className="app-screenshots-grid">
+                  {group.screenshots.map((screenshot) => {
+                    const globalIndex = results.findIndex(s => s.id === screenshot.id);
+                    return (
+                      <div key={screenshot.id} className="search-screenshot-wrapper">
+                        <LazyImage
+                          src={screenshot.image_url}
+                          alt={screenshot.apps?.name || 'Screenshot'}
+                          onClick={() => setModalIndex(globalIndex)}
+                        />
+                        {/* Убрали блок с similarity и ссылкой */}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="status">Ничего не найдено</div>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="status">Ничего не найдено</div>
+        )}
       </section>
 
       {modalIndex !== null && results[modalIndex] && (
