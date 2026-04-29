@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './AppScreenshotModal.css';
 
-const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) => {
+const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appLogo }) => {
   const [currentIndex, setCurrentIndex] = useState(selectedIndex);
   const [copyStatus, setCopyStatus] = useState('default');
 
@@ -42,6 +42,7 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) =>
 
 
   const currentScreenshot = screenshots[currentIndex];
+  const logoUrl = currentScreenshot?.apps?.logo_url || appLogo;
 
   const handleCopyImage = async () => {
     if (!currentScreenshot) return;
@@ -86,15 +87,22 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) =>
           }}
           aria-label="Previous screenshot"
         >
-          ‹
+          <span className="material-symbols-rounded">
+            arrow_back
+          </span>
         </button>
       )}
 
       <div className="modal-window" onClick={(event) => event.stopPropagation()}>
         <div className="modal-header">
+          {logoUrl && (
+            <img src={logoUrl} alt={`${currentAppName} logo`} className="modal-logo" />
+          )}
           <h3>{currentAppName}</h3>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Close modal">
-            ×
+            <span class="material-symbols-rounded">
+              close
+            </span>
           </button>
         </div>
 
@@ -112,8 +120,8 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) =>
             {copyStatus === 'copied'
               ? 'Скопировано'
               : copyStatus === 'error'
-              ? 'Ошибка копирования'
-              : 'Копировать изображение'}
+                ? 'Ошибка копирования'
+                : 'Копировать изображение'}
           </button>
         </div>
       </div>
@@ -128,7 +136,9 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose }) =>
           }}
           aria-label="Next screenshot"
         >
-          ›
+          <span className="material-symbols-rounded">
+            arrow_forward
+          </span>
         </button>
       )}
     </div>

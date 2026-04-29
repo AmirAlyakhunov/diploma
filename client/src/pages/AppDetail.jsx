@@ -169,6 +169,7 @@ const AppDetail = () => {
           screenshots={app.screenshots}
           selectedIndex={modalIndex}
           onClose={() => setModalIndex(null)}
+          appLogo={app.logo_url}
         />
       )}
     </div>

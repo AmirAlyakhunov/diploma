@@ -143,20 +143,6 @@ background: #1C1B1D;
   opacity: 1;
 }
 
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
 .screenshot-placeholder {
   display: flex;
   align-items: center;
