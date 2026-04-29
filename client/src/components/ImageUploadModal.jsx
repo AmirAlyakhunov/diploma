@@ -12,7 +12,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
   useEffect(() => {
     const handlePaste = async (e) => {
       if (!isOpen) return;
-      
+
       const items = e.clipboardData?.items;
       if (!items) return;
 
@@ -33,7 +33,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
 
   const handleFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
-    
+
     setImage(file);
     const reader = new FileReader();
     reader.onload = (e) => setPreview(e.target.result);
@@ -43,7 +43,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const file = e.dataTransfer.files[0];
     if (file) {
       handleFile(file);
@@ -68,7 +68,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
 
   const handleSearch = async () => {
     if (!image) return;
-    
+
     setIsLoading(true);
     try {
       await onSearch(image);
@@ -88,14 +88,20 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h2>Поиск по изображению</h2>
-        
+        <div className="img-modal-header">
+          <h2>Поиск по изображению</h2>
+          <button type="button" className="modal-close" onClick={onClose} aria-label="Close modal">
+            <span class="material-symbols-rounded">
+              close
+            </span>
+          </button>
+        </div>
         {preview ? (
           <>
             <img src={preview} alt="Preview" className="preview-image" />
             <div className="modal-actions">
-              <button 
-                className="search-btn" 
+              <button
+                className="search-btn"
                 onClick={handleSearch}
                 disabled={isLoading}
               >
@@ -104,7 +110,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
                     <span className="loading-spinner"></span>
                     Поиск...
                   </>
-                ) : '🔍 Искать'}
+                ) : 'Найти похожие'}
               </button>
               <button className="cancel-btn" onClick={() => { setImage(null); setPreview(null); }}>
                 Выбрать другое
@@ -119,13 +125,13 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
           >
-            <div className="icon">📷</div>
-            <p><strong>Перетащите изображение сюда</strong></p>
-            <p>или нажмите для выбора файла</p>
-            <p className="hint">Также можно нажать Ctrl+V для вставки из буфера обмена</p>
+            <span class="material-symbols-rounded">
+              photo
+            </span>
+            <p>Перетащите, нажмите <br /> или вставьте изображение</p>
           </div>
         )}
-        
+
         <input
           type="file"
           ref={fileInputRef}

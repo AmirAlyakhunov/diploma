@@ -45,6 +45,7 @@ const Search = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalIndex, setModalIndex] = useState(null);
+  const [isImageSearch, setIsImageSearch] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -56,10 +57,14 @@ const Search = () => {
     if (imageResults) {
       setResults(imageResults);
       setLoading(false);
+      setIsImageSearch(true);
       // Очищаем state чтобы при обновлении страницы не использовать старые данные
       window.history.replaceState({}, document.title);
       return;
     }
+    
+    // Если не image search, сбрасываем флаг
+    setIsImageSearch(false);
 
     const doSearch = async () => {
       if (!query) {
@@ -119,11 +124,13 @@ const Search = () => {
         </div>
 
         <div className="search-header-center">
-          <h1 className="search-title">Результаты поиска<br></br>«{query}»</h1>
-        </div>
-
-        <div className="search-header-right">
-          {/* Optional right side content */}
+          <h1 className="search-title">
+            {isImageSearch ? (
+              <>Результаты поиска <br />по изображению</>
+            ) : (
+              <>Результаты поиска<br/>«{query}»</>
+            )}
+          </h1>
         </div>
       </header>
 
