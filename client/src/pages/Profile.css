@@ -1,0 +1,106 @@
+/* Шапка профиля - аналогично app-header */
+.profile-header {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: row;
+  padding: 48px 24px 24px 104px;
+  box-sizing: border-box;
+}
+
+.profile-header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile-header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: center;
+}
+
+.profile-header-right {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.profile-avatar-icon {
+  font-size: 120px;
+  color: #E6DFE2;
+}
+
+/* Информация профиля */
+.profile-info {
+  text-align: center;
+}
+
+.profile-info h1 {
+  font-size: 56px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #E6DFE2;
+}
+/* Кнопка выхода */
+.signout-button {
+  height: 80px;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 2px;
+  gap: 12px;
+  border-radius: 100px;
+  border: none;
+  background: #1C1B1D;
+  color: #E6DFE2;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s ease, transform 0.3s ease;
+}
+
+.signout-button .material-symbols-rounded {
+  font-size: 40px;
+}
+
+.signout-button:hover {
+  background: #45455B;
+}
+
+.signout-text {
+  white-space: nowrap;
+}
+
+/* Основной контент */
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-message {
+  background: #1C1B1D;
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 600px;
+  text-align: center;
+  color: #C0C0C0;
+  line-height: 1.6;
+}
+
+.profile-message p {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+}
+
+.profile-message p:last-child {
+  margin-bottom: 0;
+}

@@ -103,7 +103,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
         <div className="img-modal-header">
           <h2>Поиск по изображению</h2>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Close modal">
-            <span class="material-symbols-rounded">
+            <span className="material-symbols-rounded">
               close
             </span>
           </button>
@@ -137,7 +137,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
           >
-            <span class="material-symbols-rounded">
+            <span className="material-symbols-rounded">
               photo
             </span>
             <p>Перетащите, нажмите <br /> или вставьте изображение</p>

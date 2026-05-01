@@ -24,7 +24,7 @@ async function getAllScreenshots(appName) {
             .from('apps')
             .select('id, name')
             .ilike('name', appName) // ilike — поиск без учёта регистра
-            .single()
+            .maybeSingle()
 
         if (appError || !app) {
             console.error(`Приложение "${appName}" не найдено в БД`)
@@ -159,16 +159,26 @@ async function indexScreenshots() {
             let cleanedOcrText = ''
             
             // Очищаем и проверяем OCR текст
-            if (result.ocr_text && result.ocr_text.trim().length > 10) {
+            if (result.ocr_text && result.ocr_text.trim()) {
+                const originalLength = result.ocr_text.trim().length
                 cleanedOcrText = cleanText(result.ocr_text)
-                if (cleanedOcrText.length > 10) {
+                const cleanedLength = cleanedOcrText.length
+                
+                console.log(`  OCR текст: ${originalLength} → ${cleanedLength} символов после очистки`)
+                
+                if (cleanedLength >= 3) {
                     try {
                         ocrEmbedding = await getTextEmbedding(cleanedOcrText)
+                        console.log(`  Текстовый эмбеддинг получен (${ocrEmbedding?.length || 0} dim)`)
                     } catch (err) {
                         console.error('Ошибка при получении OCR эмбеддинга:', err.message)
                         // Продолжаем без текстового эмбеддинга
                     }
+                } else {
+                    console.log(`  Текст слишком короткий для эмбеддинга (${cleanedLength} < 3)`)
                 }
+            } else {
+                console.log('  OCR текст не извлечён или пуст')
             }
 
             const { error } = await supabase

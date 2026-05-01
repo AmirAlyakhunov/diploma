@@ -13,6 +13,25 @@
 }
 
 .navbar-upload-button {
+  height: 56px;
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 200px;
+  border: none;
+  background: #1C1B1D;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.navbar-home-button {
 height: 56px;
 width: 56px;
 display: flex;
@@ -28,6 +47,7 @@ justify-content: center;
   font-weight: 500;
   transition: 0.3s ease, transform 0.3s ease;
 }
+
 .navbar-upload-button:hover {
   background: #45455B;
 }
@@ -64,7 +84,7 @@ justify-content: center;
   outline: none;
 }
 
-/* Контейнер для поиска с иконкой */
+/* Контейнер для поиска с иконкой и кнопкой загрузки */
 .navbar-search-container {
   position: relative;
   display: flex;
@@ -74,7 +94,7 @@ justify-content: center;
 /* Иконка поиска внутри контейнера */
 .navbar-search-icon {
   position: absolute;
-  left: 148px;
+  left: 14px;
   color: #E6DFE2;
   font-size: 28px;
   z-index: 1;
@@ -87,10 +107,17 @@ justify-content: center;
   font-size: 28px;
 }
 
-/* Обновленный input с отступом для иконки */
+.navbar-home-button .material-symbols-rounded {
+  color: #E6DFE2;
+  font-size: 28px;
+}
+
+.navbar-home-button:hover {
+  background: #45455B;
+}
+
 .navbar-search-input {
   color: #E6DFE2;
-  padding: 0 16px 0 48px; /* Больше padding слева для иконки */
   font-size: 16px;
   transition: 0.3s ease, transform 0.3s ease;
   height: 56px;
@@ -100,4 +127,76 @@ justify-content: center;
   cursor: pointer;
   background: #1C1B1D;
   text-align: center;
+}
+
+/* Секция аутентификации */
+.navbar-auth-section {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-auth-button {
+  height: 56px;
+  width: 56px;
+  padding-left: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 1000px;
+  border: none;
+  background: #1C1B1D;
+  color: #E6DFE2;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s ease, transform 0.3s ease;
+}
+
+.navbar-auth-button .material-symbols-rounded {
+  font-size: 28px;
+}
+
+.navbar-auth-button:hover {
+  background: #45455B;
+}
+
+.navbar-auth-button.logged-in {
+  background: #2a2a3a;
+}
+
+.navbar-auth-button.logged-in:hover {
+  background: #3a3a4a;
+}
+
+.navbar-auth-text {
+  white-space: nowrap;
+}
+
+.navbar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-profile-button {
+  height: 56px;
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 200px;
+  border: none;
+  background: #1C1B1D;
+  color: #E6DFE2;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.navbar-profile-button:hover {
+  background: #45455B;
+}
+
+.navbar-profile-button .material-symbols-rounded {
+  font-size: 28px;
 }

@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { addToCollection, removeFromCollection, isInCollection } from '../utils/collectionUtils';
+import AuthModal from './AuthModal';
 import './AppScreenshotModal.css';
 
 const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appLogo }) => {
   const [currentIndex, setCurrentIndex] = useState(selectedIndex);
   const [copyStatus, setCopyStatus] = useState('default');
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const { user } = useAuth();
 
   // Динамическое название из текущего скриншота (для поиска)
   const currentAppName = screenshots[currentIndex]?.apps?.name || appName;
@@ -11,6 +19,9 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
   useEffect(() => {
     setCurrentIndex(selectedIndex);
     setCopyStatus('default');
+    // Сбрасываем состояние лайка при смене скриншота
+    setIsLiked(false);
+    setLikeLoading(false);
   }, [selectedIndex]);
 
   useEffect(() => {
@@ -44,6 +55,26 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
   const currentScreenshot = screenshots[currentIndex];
   const logoUrl = currentScreenshot?.apps?.logo_url || appLogo;
 
+  // Проверяем, добавлен ли текущий скриншот в коллекцию пользователя
+  useEffect(() => {
+    const checkIfLiked = async () => {
+      if (!user || !currentScreenshot?.id) {
+        setIsLiked(false);
+        return;
+      }
+
+      try {
+        const liked = await isInCollection(currentScreenshot.id, user.id);
+        setIsLiked(liked);
+      } catch (error) {
+        console.error('Ошибка при проверке коллекции:', error);
+        setIsLiked(false);
+      }
+    };
+
+    checkIfLiked();
+  }, [currentScreenshot?.id, user]);
+
   const handleCopyImage = async () => {
     if (!currentScreenshot) return;
 
@@ -73,6 +104,44 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
     setCurrentIndex((current) => Math.min(current + 1, screenshots.length - 1));
   };
 
+  const handleLike = async () => {
+    if (!user) {
+      // Открываем модальное окно авторизации
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!currentScreenshot?.id) return;
+
+    setLikeLoading(true);
+    try {
+      if (isLiked) {
+        // Удаляем из коллекции
+        const result = await removeFromCollection(currentScreenshot.id, user.id);
+        if (result.success) {
+          setIsLiked(false);
+        } else {
+          console.error('Ошибка при удаления из коллекции:', result.error);
+        }
+      } else {
+        // Добавляем в коллекцию
+        const appId = currentScreenshot.apps?.id || null;
+        const result = await addToCollection(currentScreenshot.id, appId, user.id);
+        if (result.success) {
+          setIsLiked(true);
+        } else if (result.error === 'Скриншот уже в коллекции') {
+          setIsLiked(true); // На случай рассинхронизации
+        } else {
+          console.error('Ошибка при добавлении в коллекцию:', result.error);
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка при обработке лайка:', error);
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
   if (!currentScreenshot) return null;
 
   return (
@@ -100,7 +169,7 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
           )}
           <h3>{currentAppName}</h3>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Close modal">
-            <span class="material-symbols-rounded">
+            <span className="material-symbols-rounded">
               close
             </span>
           </button>
@@ -123,6 +192,25 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
                 ? 'Ошибка копирования'
                 : 'Копировать изображение'}
           </button>
+          
+          <button
+            type="button"
+            className={`like-button ${isLiked ? 'liked' : ''}`}
+            onClick={handleLike}
+            disabled={likeLoading}
+            aria-label={isLiked ? 'Убрать из коллекции' : 'Добавить в коллекцию'}
+          >
+            {likeLoading ? (
+              <span className="material-symbols-rounded loading">refresh</span>
+            ) : isLiked ? (
+              <span className="material-symbols-rounded">favorite</span>
+            ) : (
+              <span className="material-symbols-rounded">favorite_border</span>
+            )}
+            <span className="like-button-text">
+              {isLiked ? 'В коллекции' : 'В коллекцию'}
+            </span>
+          </button>
         </div>
       </div>
 
@@ -140,6 +228,10 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
             arrow_forward
           </span>
         </button>
+      )}
+
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
     </div>
   );

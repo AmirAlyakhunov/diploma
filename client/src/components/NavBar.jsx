@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageUploadModal from './ImageUploadModal';
 import SearchModal from './SearchModal';
+import AuthModal from './AuthModal';
+import { useAuth } from '../contexts/AuthContext';
 import './NavBar.css';
 
 const NavBar = () => {
     const [showImageModal, setShowImageModal] = useState(false);
     const [showSearchModal, setShowSearchModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
     const navigate = useNavigate();
+    const { user, signOut } = useAuth();
 
     const handleImageSearch = async (imageFile) => {
         try {
@@ -28,12 +32,23 @@ const NavBar = () => {
         }
     };
 
+    const handleAuthClick = () => {
+        if (!user) {
+            setShowAuthModal(true);
+        }
+        // Для авторизованных пользователей ничего не делаем - переход на профиль через handleProfileClick
+    };
+
+    const handleProfileClick = () => {
+        navigate('/profile');
+    };
+
     return (
         <>
             <nav className="navbar">
                 <button
                     onClick={() => navigate('/web')}
-                    className="navbar-upload-button"
+                    className="navbar-home-button"
                 >
                     <span className="material-symbols-rounded">
                         home
@@ -50,15 +65,40 @@ const NavBar = () => {
                         className="navbar-search-input"
                         readOnly
                     />
+                    <button
+                        onClick={() => setShowImageModal(true)}
+                        className="navbar-upload-button"
+                    >
+                        <span className="material-symbols-rounded">
+                            photo_camera
+                        </span>
+                    </button>
                 </div>
-                <button
-                    onClick={() => setShowImageModal(true)}
-                    className="navbar-upload-button"
-                >
-                    <span className="material-symbols-rounded">
-                        photo_camera
-                    </span>
-                </button>
+
+                {/* Кнопка аутентификации */}
+                <div className="navbar-auth-section">
+                    {user ? (
+                        <button
+                            onClick={handleProfileClick}
+                            className="navbar-profile-button"
+                            title="Профиль"
+                        >
+                            <span className="material-symbols-rounded">
+                                person
+                            </span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleAuthClick}
+                            className="navbar-auth-button"
+                            title="Войти / Зарегистрироваться"
+                        >
+                            <span className="material-symbols-rounded navbar-auth-icon">
+                                login
+                            </span>
+                        </button>
+                    )}
+                </div>
 
                 <ImageUploadModal
                     isOpen={showImageModal}
@@ -71,6 +111,10 @@ const NavBar = () => {
                     onClose={() => setShowSearchModal(false)}
                     onSmartSearch={(q) => navigate(`/search?q=${encodeURIComponent(q)}`)}
                 />
+
+                {showAuthModal && (
+                    <AuthModal onClose={() => setShowAuthModal(false)} />
+                )}
             </nav>
         </>
     );

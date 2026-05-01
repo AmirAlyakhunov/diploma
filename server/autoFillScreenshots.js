@@ -26,7 +26,7 @@ async function importScreenshots() {
                 .from('apps')
                 .select('id')
                 .eq('name', appName)
-                .single()
+                .maybeSingle()
 
             let appId
 
@@ -44,7 +44,7 @@ async function importScreenshots() {
                     .from('apps')
                     .insert({ name: appName })
                     .select('id')
-                    .single()
+                    .maybeSingle()
 
                 if (appError) {
                     console.error(`  Ошибка при создании приложения: ${appError.message}`)
@@ -95,7 +95,7 @@ async function importScreenshots() {
                     .from('screenshots')
                     .select('id')
                     .eq('image_url', imageUrl)
-                    .single()
+                    .maybeSingle()
 
                 if (screenshotCheckError && screenshotCheckError.code !== 'PGRST116') {
                     console.error(`  Ошибка при проверке скриншота: ${screenshotCheckError.message}`)

@@ -70,28 +70,48 @@ app.get('/apps', async (req, res) => {
 
 // 2. Детальная информация об одном приложении (для страницы приложения)
 app.get('/apps/:id', async (req, res) => {
-    const { data, error } = await supabase
-        .from('apps')
-        .select(`
-            id,
-            name,
-            description,
-            logo_url,
-            website_url,
-            app_platforms ( platforms ( slug, label ) ),
-            app_categories ( categories ( slug, label ) ),
-            screenshots (
+    try {
+        // Fetch app basic info with platforms and categories
+        const { data: appData, error: appError } = await supabase
+            .from('apps')
+            .select(`
+                id,
+                name,
+                description,
+                logo_url,
+                website_url,
+                app_platforms ( platforms ( slug, label ) ),
+                app_categories ( categories ( slug, label ) )
+            `)
+            .eq('id', req.params.id)
+            .maybeSingle()
+
+        if (appError) return res.status(500).json({ error: appError.message })
+
+        // Fetch screenshots separately to avoid relationship issues
+        const { data: screenshots, error: screenshotsError } = await supabase
+            .from('screenshots')
+            .select(`
                 id,
                 image_url,
-                sort_order,
-                screenshot_tags ( tags ( slug, label ) )
-            )
-        `)
-        .eq('id', req.params.id)
-        .single()
+                sort_order
+            `)
+            .eq('app_id', req.params.id)
+            .order('sort_order', { ascending: true })
 
-    if (error) return res.status(500).json({ error: error.message })
-    res.json(data)
+        if (screenshotsError) return res.status(500).json({ error: screenshotsError.message })
+
+        // Combine the data
+        const response = {
+            ...appData,
+            screenshots: screenshots || []
+        }
+
+        res.json(response)
+    } catch (err) {
+        console.error('Error fetching app details:', err)
+        res.status(500).json({ error: err.message })
+    }
 })
 
 // 3. Только скриншоты конкретного приложения
@@ -102,8 +122,7 @@ app.get('/apps/:id/screenshots', async (req, res) => {
             id,
             image_url,
             sort_order,
-            uploaded_at,
-            screenshot_tags ( tags ( slug, label ) )
+            uploaded_at
         `)
         .eq('app_id', req.params.id)
         .order('sort_order', { ascending: true })

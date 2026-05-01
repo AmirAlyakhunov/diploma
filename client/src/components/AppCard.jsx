@@ -84,7 +84,7 @@ const AppCard = ({ app }) => {
                   }}
                   aria-label="Previous slide"
                 >
-                  <span class="material-symbols-rounded">
+                  <span className="material-symbols-rounded">
                     arrow_back
                   </span>
                 </button>
@@ -100,7 +100,7 @@ const AppCard = ({ app }) => {
                   }}
                   aria-label="Next slide"
                 >
-                  <span class="material-symbols-rounded">
+                  <span className="material-symbols-rounded">
                     arrow_forward
                   </span>
                 </button>

@@ -178,3 +178,67 @@
 .copy-button .material-symbols-rounded {
   font-size: 24px;
 }
+
+/* Кнопка лайка */
+.like-button {
+  background: #1C1B1D;
+  color: #E6DFE2;
+  border: none;
+  border-radius: 1000px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  height: 56px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.like-button:hover {
+  background: #45455B;
+}
+
+.like-button.liked {
+  background: #FF3B30;
+  color: #FFFFFF;
+}
+
+.like-button.liked:hover {
+  background: #FF5E54;
+}
+
+.like-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.like-button .material-symbols-rounded {
+  font-size: 24px;
+  transition: transform 0.2s ease;
+}
+
+.like-button.liked .material-symbols-rounded {
+  animation: heartBeat 0.4s ease;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.like-button .loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.like-button-text {
+  font-weight: 500;
+}

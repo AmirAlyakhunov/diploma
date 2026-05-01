@@ -15,7 +15,7 @@ const SearchResultItem = ({ app, onAppSelect, onSmartSearch, query, isSmartSearc
     <div className="search-result-item" onClick={handleClick}>
       {isSmartSearch ? (
         <div className="smart-search-icon">
-          <span class="material-symbols-rounded">
+          <span className="material-symbols-rounded">
             wand_stars
           </span>
         </div>
