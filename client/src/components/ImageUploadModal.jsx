@@ -86,7 +86,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
+    <div className="img-modal-overlay" onClick={handleClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="img-modal-header">
           <h2>Поиск по изображению</h2>

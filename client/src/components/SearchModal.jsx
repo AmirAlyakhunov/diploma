@@ -14,13 +14,19 @@ const SearchResultItem = ({ app, onAppSelect, onSmartSearch, query, isSmartSearc
   return (
     <div className="search-result-item" onClick={handleClick}>
       {isSmartSearch ? (
-        <div className="smart-search-icon">🔍</div>
+        <div className="smart-search-icon">
+          <span class="material-symbols-rounded">
+            wand_stars
+          </span>
+        </div>
       ) : (
         <img src={app.logo_url} alt={app.name} className="app-avatar" />
       )}
       <div className="result-info">
-        <div className="result-name">{isSmartSearch ? 'Умный поиск' : app.name}</div>
-        {isSmartSearch && <div className="result-description">Поиск по изображению</div>}
+        <div className="result-name">{isSmartSearch ? "Найти по-умному" : app.name}</div>
+        <div className="result-description">
+          {isSmartSearch ? 'Поиск по описанию и тексту на скриншоте' : (app.description || '')}
+        </div>
       </div>
     </div>
   );
@@ -30,6 +36,7 @@ const SearchModal = ({ show, onClose, onSmartSearch }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const inputRef = useRef();
   const navigate = useNavigate();
 
@@ -42,9 +49,17 @@ const SearchModal = ({ show, onClose, onSmartSearch }) => {
   const searchApps = useCallback(async (searchQuery) => {
     if (!searchQuery.trim()) {
       setResults([]);
+      setLoading(false);
+      setShowLoading(false);
       return;
     }
+    
     setLoading(true);
+    // Show loading indicator only after 300ms to prevent flicker
+    const loadingTimeout = setTimeout(() => {
+      setShowLoading(true);
+    }, 300);
+    
     try {
       const response = await fetch(`/search/apps?query=${encodeURIComponent(searchQuery)}&limit=10`);
       const data = await response.json();
@@ -53,7 +68,9 @@ const SearchModal = ({ show, onClose, onSmartSearch }) => {
       console.error('Search error:', err);
       setResults([]);
     } finally {
+      clearTimeout(loadingTimeout);
       setLoading(false);
+      setShowLoading(false);
     }
   }, []);
 
@@ -87,35 +104,40 @@ const SearchModal = ({ show, onClose, onSmartSearch }) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Поиск приложений..."
+          placeholder="Поиск"
           className="search-input"
         />
         <div className="search-results">
-          {loading ? (
-            <div className="loading">Поиск...</div>
-          ) : (
-            <>
-              {results.map((app) => (
-                <SearchResultItem
-                  key={app.id}
-                  app={app}
-                  onAppSelect={(id) => { navigate(`/app/${id}`); onClose(); }}
-                  onSmartSearch={onSmartSearch}
-                  query={query}
-                />
-              ))}
-              {query.trim() && (
-                <SearchResultItem
-                  isSmartSearch
-                  onAppSelect={(id) => { navigate(`/app/${id}`); onClose(); }}
-                  onSmartSearch={(searchQuery) => {
-                    onClose();
-                    onSmartSearch(searchQuery);
-                  }}
-                  query={query}
-                />
-              )}
-            </>
+          {/* Always show results (previous results stay visible during loading) */}
+          {results.map((app) => (
+            <SearchResultItem
+              key={app.id}
+              app={app}
+              onAppSelect={(id) => { navigate(`/app/${id}`); onClose(); }}
+              onSmartSearch={onSmartSearch}
+              query={query}
+            />
+          ))}
+          
+          {/* Smart search item (only when query is not empty) */}
+          {query.trim() && (
+            <SearchResultItem
+              isSmartSearch
+              onAppSelect={(id) => { navigate(`/app/${id}`); onClose(); }}
+              onSmartSearch={(searchQuery) => {
+                onClose();
+                onSmartSearch(searchQuery);
+              }}
+              query={query}
+            />
+          )}
+          
+          {/* Loading indicator (only shown after delay) */}
+          {showLoading && (
+            <div className="loading">
+              <div className="loading-spinner"></div>
+              <div>Поиск...</div>
+            </div>
           )}
         </div>
       </div>

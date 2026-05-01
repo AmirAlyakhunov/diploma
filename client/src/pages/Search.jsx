@@ -96,7 +96,7 @@ const Search = () => {
             query,
             limit,
             offset,
-            similarity_threshold: 0.49
+            similarity_threshold: 0.47
           })
         });
         
@@ -249,23 +249,6 @@ const Search = () => {
             {hasMore && !loadingMore && (
               <div ref={loadMoreRef} className="load-more-sentinel">
                 {/* Невидимый элемент для триггера загрузки */}
-              </div>
-            )}
-            
-            {/* Кнопка "Загрузить еще" для мобильных устройств или как fallback */}
-            {hasMore && !loadingMore && (
-              <button
-                className="load-more-button"
-                onClick={loadMore}
-                aria-label="Загрузить еще"
-              >
-                Загрузить еще
-              </button>
-            )}
-            
-            {!hasMore && results.length > 0 && (
-              <div className="no-more-results">
-                Все результаты загружены
               </div>
             )}
           </>

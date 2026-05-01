@@ -9,7 +9,12 @@ const SearchResult = ({ screenshot }) => {
           <img src={screenshot.image_url} alt="" className="screenshot-img" />
         </div>
         <div className="app-info">
-          <span className="app-name">{screenshot.apps?.name}</span>
+          <div className="app-info-text">
+            <span className="app-name">{screenshot.apps?.name}</span>
+            {screenshot.apps?.description && (
+              <p className="app-description">{screenshot.apps.description}</p>
+            )}
+          </div>
         </div>
       </article>
     </Link>
