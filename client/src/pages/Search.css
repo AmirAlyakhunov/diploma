@@ -67,41 +67,29 @@
   margin-top: -8px;
 }
 
-.search-app-link {
-  color: #0070f3;
-  text-decoration: none;
-  font-weight: 600;
-}
-
 .search-app-link:hover {
   text-decoration: underline;
 }
 
-.search-similarity {
-  font-size: 12px;
-  color: #666;
-  background: #eee;
-  padding: 4px 8px;
-  border-radius: 4px;
+.search-results-ungrouped {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
+  gap: 12px;
+  padding: 0 24px;
 }
 
-.search-results-grouped {
-  padding: 0 24px 24px;
-}
-
-.app-group {
-  margin-bottom: 48px;
+.search-result-app {
+  display: flex;
+  flex-direction: column;
 }
 
 .search-app-info-row-link {
   text-decoration: none;
   color: inherit;
   display: block;
-  position: sticky;
-  top: 0;
-  z-index: 10;
   background: #121212;
-  padding: 24px 0;
+  margin-top: 16px;
+  margin-bottom: 24px;
 }
 
 .search-app-info-row {

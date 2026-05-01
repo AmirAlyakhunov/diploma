@@ -65,6 +65,15 @@ async function getAllScreenshots(appName) {
     return allScreenshots
 }
 
+function cleanText(text) {
+    if (!text || typeof text !== 'string') return ''
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+}
+
 async function getEmbedding(imageUrl) {
     try {
         const imageResponse = await axios.get(imageUrl, {
@@ -81,9 +90,25 @@ async function getEmbedding(imageUrl) {
             timeout: 60000
         })
 
-        return aiResponse.data.embedding
+        // Теперь возвращаем и эмбеддинг, и OCR текст
+        return {
+            embedding: aiResponse.data.embedding,
+            ocr_text: aiResponse.data.ocr_text || ''
+        }
     } catch (err) {
         console.error('Ошибка при получении эмбеддинга:', err.message)
+        return null
+    }
+}
+
+async function getTextEmbedding(text) {
+    try {
+        const res = await axios.post(`${AI_SERVICE_URL}/embed/text`, { text }, {
+            timeout: 30000
+        })
+        return res.data.embedding
+    } catch (err) {
+        console.error('Ошибка при получении текстового эмбеддинга:', err.message)
         return null
     }
 }
@@ -127,14 +152,32 @@ async function indexScreenshots() {
         const screenshot = toIndex[i]
         console.log(`[${i + 1}/${toIndex.length}] Индексирую ${screenshot.id}...`)
 
-        const embedding = await getEmbedding(screenshot.image_url)
+        const result = await getEmbedding(screenshot.image_url)
 
-        if (embedding) {
+        if (result && result.embedding) {
+            let ocrEmbedding = null
+            let cleanedOcrText = ''
+            
+            // Очищаем и проверяем OCR текст
+            if (result.ocr_text && result.ocr_text.trim().length > 10) {
+                cleanedOcrText = cleanText(result.ocr_text)
+                if (cleanedOcrText.length > 10) {
+                    try {
+                        ocrEmbedding = await getTextEmbedding(cleanedOcrText)
+                    } catch (err) {
+                        console.error('Ошибка при получении OCR эмбеддинга:', err.message)
+                        // Продолжаем без текстового эмбеддинга
+                    }
+                }
+            }
+
             const { error } = await supabase
                 .from('screenshot_embeddings')
                 .insert({
                     screenshot_id: screenshot.id,
-                    visual_embedding: embedding,
+                    visual_embedding: result.embedding,
+                    ocr_text: cleanedOcrText,
+                    ocr_embedding: ocrEmbedding,
                     indexed_at: new Date().toISOString()
                 })
 
@@ -143,6 +186,9 @@ async function indexScreenshots() {
                 failCount++
             } else {
                 successCount++
+                if (cleanedOcrText) {
+                    console.log(`  Извлечён текст (${cleanedOcrText.length} символов)`)
+                }
             }
         } else {
             failCount++

@@ -151,22 +151,47 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
         const embedding = aiResponse.data.embedding
         console.log('Image embedding received, length:', embedding?.length)
         
-        // 2. Ищем похожие скриншоты через косинусное сходство
-        const { data, error } = await supabase.rpc('cosine_similarity_search', {
-            query_embedding: embedding,
-            match_count: 20
-        })
+        // 2. Ищем похожие скриншоты через гибридный поиск (визуальный + OCR)
+        // Если функция hybrid_similarity_search не существует, используем fallback на визуальный поиск
+        let data = null
+        let error = null
         
-        console.log('Search results:', data?.length || 0)
+        try {
+            const result = await supabase.rpc('hybrid_similarity_search', {
+                query_embedding: embedding,
+                visual_weight: 0.6,
+                text_weight: 0.4,
+                match_count: 100
+            })
+            data = result.data
+            error = result.error
+            console.log('Using hybrid search')
+        } catch (err) {
+            console.log('Hybrid search function not available, falling back to visual-only search')
+            // Fallback to visual-only search
+            const result = await supabase.rpc('cosine_similarity_search', {
+                query_embedding: embedding,
+                match_count: 100
+            })
+            data = result.data
+            error = result.error
+        }
+        
+        console.log('Search results before filtering:', data?.length || 0)
 
         if (error) return res.status(500).json({ error: error.message })
 
-        // 3. Получаем данные скриншотов
-        if (!data || data.length === 0) {
+        // 3. Фильтруем по порогу similarity (0.49)
+        const similarity_threshold = 0.49
+        const filteredData = data ? data.filter(item => item.similarity >= similarity_threshold) : []
+        console.log('Search results after threshold filtering:', filteredData.length)
+
+        // 4. Получаем данные скриншотов
+        if (!filteredData || filteredData.length === 0) {
             return res.json([])
         }
 
-        const screenshotIds = data.map(item => item.screenshot_id)
+        const screenshotIds = filteredData.map(item => item.screenshot_id)
 
         const { data: screenshots, error: screenshotsError } = await supabase
             .from('screenshots')
@@ -174,22 +199,36 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
                 id,
                 image_url,
                 app_id,
-                apps ( id, name, logo_url, description )
+                apps ( id, name, logo_url, description ),
+                screenshot_embeddings ( ocr_text )
             `)
             .in('id', screenshotIds)
 
         if (screenshotsError) return res.status(500).json({ error: screenshotsError.message })
 
-        // 4. Сортируем в порядке сходства
-        const sortedScreenshots = screenshotIds.map(id => 
+        // 5. Сортируем в порядке сходства
+        const sortedScreenshots = screenshotIds.map(id =>
             screenshots.find(s => s.id === id)
         ).filter(Boolean)
 
-        // 5. Добавляем similarity score
-        const result = sortedScreenshots.map((screenshot, index) => ({
-            ...screenshot,
-            similarity: data.find(d => d.screenshot_id === screenshot.id)?.similarity || 0
-        }))
+        // 6. Добавляем similarity score и OCR текст
+        const result = sortedScreenshots.map((screenshot, index) => {
+            // Извлекаем OCR текст из screenshot_embeddings (может быть объектом или массивом)
+            let ocrText = ''
+            if (screenshot.screenshot_embeddings) {
+                if (Array.isArray(screenshot.screenshot_embeddings)) {
+                    ocrText = screenshot.screenshot_embeddings[0]?.ocr_text || ''
+                } else {
+                    ocrText = screenshot.screenshot_embeddings?.ocr_text || ''
+                }
+            }
+            
+            return {
+                ...screenshot,
+                similarity: filteredData.find(d => d.screenshot_id === screenshot.id)?.similarity || 0,
+                ocr_text: ocrText
+            }
+        })
 
         res.json(result)
 
@@ -201,7 +240,7 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
 
 // 7. Поиск по текстовому описанию (CLIP)
 app.post('/search/text', async (req, res) => {
-    const { query, limit = 20, offset = 0 } = req.body
+    const { query, limit = 20, offset = 0, similarity_threshold = 0.49 } = req.body
 
     if (!query) {
         return res.status(400).json({ error: 'Query is required' })
@@ -217,22 +256,51 @@ app.post('/search/text', async (req, res) => {
         const embedding = aiResponse.data.embedding
         console.log('Embedding received, length:', embedding?.length)
         
-        // 2. Ищем похожие скриншоты через косинусное сходство
-        const { data, error } = await supabase.rpc('cosine_similarity_search', {
-            query_embedding: embedding,
-            match_count: limit + offset
-        })
+        // 2. Ищем похожие скриншоты через гибридный поиск (визуальный + OCR)
+        // Если функция hybrid_similarity_search не существует, используем fallback на визуальный поиск
+        let data = null
+        let error = null
         
-        console.log('Search results:', data?.length || 0)
+        // Запрашиваем больше результатов, чтобы после фильтрации по порогу осталось достаточно
+        const requestedCount = Math.max(100, (limit + offset) * 2);
+        
+        try {
+            const result = await supabase.rpc('hybrid_similarity_search', {
+                query_embedding: embedding,
+                visual_weight: 0.6,
+                text_weight: 0.4,
+                match_count: requestedCount
+            })
+            data = result.data
+            error = result.error
+            console.log('Using hybrid search for text query')
+        } catch (err) {
+            console.log('Hybrid search function not available, falling back to visual-only search')
+            // Fallback to visual-only search
+            const result = await supabase.rpc('cosine_similarity_search', {
+                query_embedding: embedding,
+                match_count: requestedCount
+            })
+            data = result.data
+            error = result.error
+        }
+        
+        console.log('Search results before filtering:', data?.length || 0)
 
         if (error) return res.status(500).json({ error: error.message })
 
-        // 3. Получаем данные скриншотов
-        if (!data || data.length === 0) {
+        // 3. Фильтруем по порогу similarity
+        const filteredData = data ? data.filter(item => item.similarity >= similarity_threshold) : []
+        console.log('Search results after threshold filtering:', filteredData.length)
+
+        // 4. Получаем данные скриншотов только для отфильтрованных результатов
+        if (!filteredData || filteredData.length === 0) {
             return res.json([])
         }
 
-        const screenshotIds = data.slice(offset).map(item => item.screenshot_id) // Slice from offset
+        // Применяем пагинацию после фильтрации
+        const paginatedData = filteredData.slice(offset, offset + limit)
+        const screenshotIds = paginatedData.map(item => item.screenshot_id)
 
         const { data: screenshots, error: screenshotsError } = await supabase
             .from('screenshots')
@@ -240,24 +308,43 @@ app.post('/search/text', async (req, res) => {
                 id,
                 image_url,
                 app_id,
-                apps ( id, name, logo_url, description )
+                apps ( id, name, logo_url, description ),
+                screenshot_embeddings ( ocr_text )
             `)
             .in('id', screenshotIds)
 
         if (screenshotsError) return res.status(500).json({ error: screenshotsError.message })
 
-        // 4. Сортируем в порядке сходства
-        const sortedScreenshots = screenshotIds.map(id => 
+        // 5. Сортируем в порядке сходства
+        const sortedScreenshots = screenshotIds.map(id =>
             screenshots.find(s => s.id === id)
         ).filter(Boolean)
 
-        // 5. Добавляем similarity score
-        const result = sortedScreenshots.map((screenshot, index) => ({
-            ...screenshot,
-            similarity: data.slice(offset)[index]?.similarity || 0
-        }))
+        // 6. Добавляем similarity score и OCR текст
+        const result = sortedScreenshots.map((screenshot, index) => {
+            // Извлекаем OCR текст из screenshot_embeddings (может быть объектом или массивом)
+            let ocrText = ''
+            if (screenshot.screenshot_embeddings) {
+                if (Array.isArray(screenshot.screenshot_embeddings)) {
+                    ocrText = screenshot.screenshot_embeddings[0]?.ocr_text || ''
+                } else {
+                    ocrText = screenshot.screenshot_embeddings?.ocr_text || ''
+                }
+            }
+            
+            return {
+                ...screenshot,
+                similarity: paginatedData[index]?.similarity || 0,
+                ocr_text: ocrText
+            }
+        })
 
-        res.json(result)
+        // 7. Возвращаем также общее количество отфильтрованных результатов для пагинации
+        res.json({
+            results: result,
+            total: filteredData.length,
+            hasMore: offset + limit < filteredData.length
+        })
 
     } catch (err) {
         console.error('Search error:', err.message)
