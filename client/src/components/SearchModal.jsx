@@ -81,6 +81,18 @@ const SearchModal = ({ show, onClose, onSmartSearch }) => {
     return () => clearTimeout(timeoutId);
   }, [query, searchApps]);
 
+  // Block scroll when modal is open
+  useEffect(() => {
+    if (!show) return;
+    
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [show]);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Escape') {
       onClose();

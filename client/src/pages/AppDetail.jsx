@@ -50,9 +50,8 @@ const AppDetail = () => {
     }
   };
 
-  if (loading) return <div className="container">Loading...</div>;
-  if (error) return <div className="container">Error: {error}</div>;
-  if (!app) return <div className="container">App not found</div>;
+  if (loading) return <div className="status">Загрузка...</div>;
+  if (error) return <div className="status">Ошибка: {error}</div>;
 
   return (
     <div className="container">
