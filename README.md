@@ -1,4 +1,4 @@
-# Дипломный проектя
+# Дипломный проект
 
 Разработка интеллектуального веб-приложения для проведения конкурентного анализа интерфейсов программного обеспечения. 
 
@@ -62,52 +62,6 @@ sudo apt-get install tesseract-ocr
 #### Windows
 Скачайте установщик с [официального сайта Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
 
-## Быстрый старт
-
-1. **Клонируйте репозиторий**
-   ```bash
-   git clone <ваш-репозиторий>
-   cd diploma
-   ```
-
-2. **Установите зависимости для всех компонентов**
-   ```bash
-   # Установите зависимости для клиента
-   cd client
-   npm install
-   cd ..
-   
-   # Установите зависимости для сервера
-   cd server
-   npm install
-   cd ..
-   
-   # Установите зависимости для AI-сервиса
-   cd ai-service
-   pip install -r requirements.txt
-   cd ..
-   ```
-
-3. **Запустите все сервисы**
-   ```bash
-   # В трех отдельных терминалах выполните:
-   
-   # Терминал 1: AI сервис
-   cd ai-service
-   python app.py
-   
-   # Терминал 2: Node.js сервер
-   cd server
-   npm start
-   
-   # Терминал 3: React клиент
-   cd client
-   npm run dev
-   ```
-
-4. **Откройте приложение**
-   - Перейдите по адресу: [http://localhost:5173](http://localhost:5173)
-
 ## Подробная настройка
 
 ### 1. Настройка сервера (Node.js)
@@ -143,12 +97,14 @@ npm install
    ```
 4. Убедитесь, что Tesseract OCR установлен и доступен в PATH
 
-## Запуск проектая
+## Запуск проекта
 
 ### Шаг 1: Запустите AI сервис
 ```bash
 cd ai-service
-python app.py
+Пример запуска через виртуальное окружение:
+/Users/amir/Documents/diploma/ai-service/venv/bin/python /Users/amir/Documents/diploma/ai-service/app.py
+
 ```
 AI сервис будет доступен по адресу: [http://localhost:5000](http://localhost:5000)
 
