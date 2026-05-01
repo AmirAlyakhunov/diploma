@@ -12,6 +12,7 @@
   - [3. Настройка AI-сервиса (Python)](#3-настройка-ai-сервиса-python)
 - [Запуск проекта](#запуск-проекта)
 - [API Endpoints](#api-endpoints)
+- [Аутентификация](#аутентификация)
 - [Устранение неполадок](#устранение-неполадок)
 
 ## Структура проекта
@@ -20,8 +21,10 @@
 diploma/
 ├── client/                 # React фронтенд (Vite)
 │   ├── src/
-│   │   ├── components/    # React компоненты
+│   │   ├── components/    # React компоненты (включая AuthModal)
 │   │   ├── pages/        # Страницы приложения
+│   │   ├── contexts/     # React контексты (AuthContext, ProtectedRoute)
+│   │   ├── lib/          # Клиентские библиотеки (supabaseClient)
 │   │   └── utils/        # Вспомогательные функции
 │   ├── package.json
 │   └── vite.config.js
@@ -33,7 +36,7 @@ diploma/
 ├── ai-service/           # Python AI сервис
 │   ├── app.py           # Flask приложение
 │   └── requirements.txt # Зависимости Python
-└── README.md            
+└── README.md
 ```
 
 ## Предварительные требования
@@ -147,6 +150,24 @@ curl "http://localhost:3000/apps?platform=ios&limit=10"
 |-------|----------|----------|
 | POST | `/analyze` | Анализ скриншотов с помощью AI |
 | GET | `/health` | Проверка работоспособности сервиса |
+
+## Аутентификация
+
+Проект использует **Supabase Authentication** для управления пользователями. Реализована система входа/регистрации через email с одноразовым паролем (OTP).
+
+### Основные возможности
+
+- **Регистрация и вход по email**: Пользователь вводит email, получает magic‑ссылку для входа
+- **Автоматическое создание профиля**: При первом входе в таблице `public.users` создаётся запись
+- **Защищённые маршруты**: Страница профиля (`/profile`) доступна только авторизованным пользователям
+- **Контекст аутентификации**: Глобальный React‑контекст (`AuthContext`) предоставляет состояние пользователя и методы авторизации
+
+### Компоненты аутентификации
+
+- `client/src/contexts/AuthContext.jsx` – React‑контекст с методами `signInWithOtp`, `signOut`, `verifyOtp`
+- `client/src/components/AuthModal.jsx` – модальное окно для ввода email и отображения статуса
+- `client/src/contexts/ProtectedRoute.jsx` – компонент‑обёртка для защиты маршрутов
+- `client/src/lib/supabaseClient.js` – клиент Supabase, настроенный на проект
 
 ## Технические детали
 
