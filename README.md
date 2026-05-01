@@ -102,10 +102,12 @@ npm install
 ### Шаг 1: Запустите AI сервис
 ```bash
 cd ai-service
-Пример запуска через виртуальное окружение:
-/Users/amir/Documents/diploma/ai-service/venv/bin/python /Users/amir/Documents/diploma/ai-service/app.py
-
 ```
+Пример запуска через виртуальное окружение:
+```bash
+/Users/amir/Documents/diploma/ai-service/venv/bin/python /Users/amir/Documents/diploma/ai-service/app.py
+```
+
 AI сервис будет доступен по адресу: [http://localhost:5000](http://localhost:5000)
 
 ### Шаг 2: Запустите Node.js сервер
