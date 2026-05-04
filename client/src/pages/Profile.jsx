@@ -88,16 +88,14 @@ const Profile = () => {
             <span className="material-symbols-rounded profile-avatar-icon">
               account_circle
             </span>
-          <div className="profile-info">
-            <h1 className="profile-email">{user?.email}</h1>
-            <div className="profile-meta">
+          <div className="app-info">
+            <h1>{user?.email}</h1>
               {collection.length > 0 && (
                 <p className="collection-count">
                   {collection.length} {collection.length === 1 ? 'скриншот' :
                     collection.length < 5 ? 'скриншота' : 'скриншотов'} в коллекции
                 </p>
               )}
-            </div>
           </div>
         </div>
 
@@ -119,7 +117,8 @@ const Profile = () => {
           </div>
         ) : collection.length === 0 ? (
           <div className="profile-message">
-            <p>Ваша коллекция пуста. Добавляйте скриншоты в коллекцию, нажимая на ❤️ в модальном окне скриншота.</p>
+            <h1>¯\_(ツ)_/¯</h1>
+            <p>Нет сохранённых скриншотов</p>
           </div>
         ) : (
           <div className="search-results-ungrouped">

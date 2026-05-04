@@ -185,14 +185,6 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
         </div>
 
         <div className="modal-footer">
-          <button type="button" className="copy-button" onClick={handleCopyImage}>
-            {copyStatus === 'copied'
-              ? 'Скопировано'
-              : copyStatus === 'error'
-                ? 'Ошибка копирования'
-                : 'Копировать изображение'}
-          </button>
-          
           <button
             type="button"
             className={`like-button ${isLiked ? 'liked' : ''}`}
@@ -200,16 +192,16 @@ const AppScreenshotModal = ({ appName, screenshots, selectedIndex, onClose, appL
             disabled={likeLoading}
             aria-label={isLiked ? 'Убрать из коллекции' : 'Добавить в коллекцию'}
           >
-            {likeLoading ? (
-              <span className="material-symbols-rounded loading">refresh</span>
-            ) : isLiked ? (
-              <span className="material-symbols-rounded">favorite</span>
-            ) : (
-              <span className="material-symbols-rounded">favorite_border</span>
-            )}
             <span className="like-button-text">
-              {isLiked ? 'В коллекции' : 'В коллекцию'}
+              {isLiked ? 'Сохранено в профиле' : 'Сохранить в профиль'}
             </span>
+          </button>
+            <button type="button" className="copy-button" onClick={handleCopyImage}>
+            {copyStatus === 'copied'
+              ? 'Скопировано'
+              : copyStatus === 'error'
+                ? 'Ошибка копирования'
+                : 'Копировать'}
           </button>
         </div>
       </div>

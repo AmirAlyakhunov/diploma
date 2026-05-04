@@ -37,17 +37,6 @@
   color: #E6DFE2;
 }
 
-/* Информация профиля */
-.profile-info {
-  text-align: center;
-}
-
-.profile-info h1 {
-  font-size: 56px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
-  color: #E6DFE2;
-}
 /* Кнопка выхода */
 .signout-button {
   height: 80px;
@@ -87,18 +76,22 @@
 }
 
 .profile-message {
-  background: #1C1B1D;
-  border-radius: 24px;
-  padding: 32px;
-  max-width: 600px;
+  padding: 96px;
+  width: 100%;
   text-align: center;
-  color: #C0C0C0;
-  line-height: 1.6;
+  color: inherit;
+  opacity: .5;
 }
 
 .profile-message p {
   margin: 0 0 16px 0;
-  font-size: 16px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.profile-message h1 {
+  font-size: 120px;
+  margin: 0 0 16px 0;
 }
 
 .profile-message p:last-child {
