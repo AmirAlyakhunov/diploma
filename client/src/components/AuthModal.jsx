@@ -34,18 +34,21 @@ const AuthModal = ({ onClose }) => {
   return (
     <div className="auth-modal-overlay" onClick={onClose}>
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="auth-modal-close" onClick={onClose}>
-          ×
-        </button>
-
-        <h2 className="auth-modal-title">
-          {step === 'email' ? 'Вход / Регистрация' : 'Проверьте вашу почту'}
-        </h2>
+        <div className='auth-modal-header'>
+             <h1 className="auth-modal-title">
+          {step === 'email' ? 'Войти или зарегистрироваться' : 'Проверьте вашу почту'}
+        </h1>
+           <button type="button" className="modal-close" onClick={onClose} aria-label="Close modal">
+            <span className="material-symbols-rounded">
+              close
+            </span>
+          </button>
+        </div>
 
         {step === 'email' ? (
           <form onSubmit={handleEmailSubmit} className="auth-form">
             <p className="auth-modal-description">
-              Введите ваш email. Мы отправим ссылку для входа.
+              На почту отправим ссылку для входа
             </p>
             <input
               type="email"
@@ -66,7 +69,7 @@ const AuthModal = ({ onClose }) => {
         ) : (
           <div className="auth-form">
             <p className="auth-modal-description">
-              Ссылка для входа отправлена на <strong>{email}</strong>. Перейдите по ссылке в письме для завершения входа.
+              Ссылка для входа отправлена на <strong>{email}</strong>. Перейдите по ссылке в письме для завершения входа
             </p>
             <div className="auth-modal-actions">
               <button
@@ -87,19 +90,7 @@ const AuthModal = ({ onClose }) => {
             </div>
           </div>
         )}
-
-        {message && (
-          <div className={`auth-message ${message.includes('Ошибка') ? 'error' : 'success'}`}>
-            {message}
-          </div>
-        )}
-
-        <div className="auth-modal-footer">
-          <p className="auth-modal-note">
-            Нажимая «Получить код», вы соглашаетесь с условиями использования.
-          </p>
         </div>
-      </div>
     </div>
   )
 }
