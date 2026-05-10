@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1200;
   backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease;
 }
@@ -22,6 +22,7 @@
 .auth-modal-description{
   font-size: 24px;
   font-weight: 400;
+  margin: 32px 0;
 }
 
 .auth-modal {
@@ -29,7 +30,7 @@
   border-radius: 24px;
   padding: 56px;
   width: 90%;
-  max-width: 640px;
+  max-width: 720px;
   text-align: center;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease;
@@ -64,7 +65,7 @@
 }
 
 .auth-modal-title {
-  font-size: 40px;
+  font-size: 56px;
   font-weight: 500;
   color: #E6DFE2;
   margin-left: auto;

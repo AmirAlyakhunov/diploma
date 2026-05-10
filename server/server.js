@@ -200,8 +200,8 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
 
         if (error) return res.status(500).json({ error: error.message })
 
-        // 3. Фильтруем по порогу similarity (0.47)
-        const similarity_threshold = 0.47
+        // 3. Фильтруем по порогу similarity (0.45)
+        const similarity_threshold = 0.45
         const filteredData = data ? data.filter(item => item.similarity >= similarity_threshold) : []
         console.log('Search results after threshold filtering:', filteredData.length)
 
@@ -259,7 +259,7 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
 
 // 7. Поиск по текстовому описанию (CLIP)
 app.post('/search/text', async (req, res) => {
-    const { query, limit = 20, offset = 0, similarity_threshold = 0.47 } = req.body
+    const { query, limit = 20, offset = 0, similarity_threshold = 0.45 } = req.body
 
     if (!query) {
         return res.status(400).json({ error: 'Query is required' })

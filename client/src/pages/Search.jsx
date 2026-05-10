@@ -96,7 +96,7 @@ const Search = () => {
             query,
             limit,
             offset,
-            similarity_threshold: 0.47
+            similarity_threshold: 0.45
           })
         });
         

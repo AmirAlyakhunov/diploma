@@ -63,14 +63,15 @@ const AuthModal = ({ onClose }) => {
               className="auth-button"
               disabled={isLoading}
             >
-              {isLoading ? 'Отправка...' : 'Получить код'}
+              {isLoading ? 'Отправка...' : 'Получить ссылку'}
             </button>
           </form>
         ) : (
           <div className="auth-form">
             <p className="auth-modal-description">
-              Ссылка для входа отправлена на <strong>{email}</strong>. Перейдите по ссылке в письме для завершения входа
+              Ссылка для входа отправлена на <strong>{email}</strong>. Перейдите по ссылке в письме от Supabase Auth для завершения входа
             </p>
+            
             <div className="auth-modal-actions">
               <button
                 type="button"

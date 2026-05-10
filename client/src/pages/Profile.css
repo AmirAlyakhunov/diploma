@@ -77,10 +77,8 @@
 
 .profile-message {
   padding: 96px;
-  width: 100%;
   text-align: center;
   color: inherit;
-  opacity: .5;
 }
 
 .profile-message p {
@@ -90,10 +88,7 @@
 }
 
 .profile-message h1 {
-  font-size: 120px;
-  margin: 0 0 16px 0;
-}
-
-.profile-message p:last-child {
-  margin-bottom: 0;
+  font-size: 160px;
+  font-weight: 500;
+  margin: 0 0 48px 0;
 }

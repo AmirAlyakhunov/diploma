@@ -3,6 +3,8 @@ import Home from './pages/Home';
 import AppDetail from './pages/AppDetail';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
+import AuthCallback from './pages/AuthCallback';
+import NotFound from './pages/NotFound';
 import NavBar from './components/NavBar';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './contexts/ProtectedRoute';
@@ -24,12 +26,18 @@ function App() {
           <Route path="/app/:id" element={<AppDetail />} />
           <Route path="/search" element={<Search />} />
           
+          {/* Callback для аутентификации через email */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          
           {/* Защищённый маршрут профиля */}
           <Route path="/profile" element={
             <ProtectedRoute>
               <Profile />
             </ProtectedRoute>
           } />
+
+          {/* Страница 404 для любых других маршрутов */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>
