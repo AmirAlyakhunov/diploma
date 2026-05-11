@@ -4,6 +4,7 @@ import AppScreenshotModal from '../components/AppScreenshotModal';
 import { exportScreenshotsToZip } from '../utils/exportScreenshots';
 import Tag from '../components/Tag';
 import { getPlatformUrl, getCategoryUrl } from '../utils/tagNavigation';
+import NotFound from './NotFound';
 import './AppDetail.css';
 
 const AppDetail = () => {
@@ -21,7 +22,7 @@ const AppDetail = () => {
       setLoading(true);
       try {
         const response = await fetch(`/apps/${id}`);
-        if (!response.ok) throw new Error('Failed to fetch app');
+        if (!response.ok) throw new Error('Приложение не найдено');
         const data = await response.json();
         setApp(data);
       } catch (err) {
@@ -51,7 +52,7 @@ const AppDetail = () => {
   };
 
   if (loading) return <div className="status">Загрузка...</div>;
-  if (error) return <div className="status">Ошибка: {error}</div>;
+  if (error) return <NotFound message={error} />;
 
   return (
     <div className="container">

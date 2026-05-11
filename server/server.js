@@ -171,29 +171,45 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
         console.log('Image embedding received, length:', embedding?.length)
         
         // 2. Ищем похожие скриншоты через гибридный поиск (визуальный + OCR)
-        // Если функция hybrid_similarity_search не существует, используем fallback на визуальный поиск
+        // Если функция hybrid_similarity_search не существует или веса некорректны, используем fallback на визуальный поиск
         let data = null
         let error = null
-        
-        try {
-            const result = await supabase.rpc('hybrid_similarity_search', {
-                query_embedding: embedding,
-                visual_weight: 0.6,
-                text_weight: 0.4,
-                match_count: 100
-            })
-            data = result.data
-            error = result.error
-            console.log('Using hybrid search')
-        } catch (err) {
-            console.log('Hybrid search function not available, falling back to visual-only search')
-            // Fallback to visual-only search
+        const visualWeight = Number(req.body.visual_weight ?? 0.7)
+        const textWeight = Number(req.body.text_weight ?? 0.3)
+
+        console.log('Image search weights:', { visualWeight, textWeight })
+
+        if (visualWeight + textWeight <= 0) {
+            console.log('Invalid hybrid weights, using visual-only search')
             const result = await supabase.rpc('cosine_similarity_search', {
                 query_embedding: embedding,
                 match_count: 100
             })
             data = result.data
             error = result.error
+        } else {
+            try {
+                const result = await supabase.rpc('hybrid_similarity_search', {
+                    query_embedding: embedding,
+                    visual_weight: visualWeight,
+                    text_weight: textWeight,
+                    match_count: 100
+                })
+                if (result.error) {
+                    throw result.error
+                }
+                data = result.data
+                error = null
+                console.log('Using hybrid search')
+            } catch (err) {
+                console.log('Hybrid search failed, falling back to visual-only search:', err.message || err)
+                const result = await supabase.rpc('cosine_similarity_search', {
+                    query_embedding: embedding,
+                    match_count: 100
+                })
+                data = result.data
+                error = result.error
+            }
         }
         
         console.log('Search results before filtering:', data?.length || 0)
@@ -241,10 +257,12 @@ app.post('/search/image', upload.single('image'), async (req, res) => {
                     ocrText = screenshot.screenshot_embeddings?.ocr_text || ''
                 }
             }
-            
+            const match = filteredData.find(d => d.screenshot_id === screenshot.id) || {}
             return {
                 ...screenshot,
-                similarity: filteredData.find(d => d.screenshot_id === screenshot.id)?.similarity || 0,
+                similarity: match.similarity || 0,
+                visual_similarity: match.visual_similarity || 0,
+                text_similarity: match.text_similarity || 0,
                 ocr_text: ocrText
             }
         })
@@ -267,43 +285,59 @@ app.post('/search/text', async (req, res) => {
 
     try {
         console.log('Search query:', query)
-        
-        // 1. Получаем эмбеддинг текста от AI-сервиса
-        const aiResponse = await axios.post(`${AI_SERVICE_URL}/embed/text`, {
+        const { data: aiData, error: aiError } = await axios.post(`${AI_SERVICE_URL}/embed/text`, {
             text: query
         })
-        const embedding = aiResponse.data.embedding
+        if (aiError) {
+            throw aiError
+        }
+
+        const embedding = aiData.embedding
         console.log('Embedding received, length:', embedding?.length)
-        
+
         // 2. Ищем похожие скриншоты через гибридный поиск (визуальный + OCR)
-        // Если функция hybrid_similarity_search не существует, используем fallback на визуальный поиск
+        // Если функция hybrid_similarity_search не существует или веса некорректны, используем fallback на визуальный поиск
         let data = null
         let error = null
-        
-        // Запрашиваем больше результатов, чтобы после фильтрации по порогу осталось достаточно
-        const requestedCount = Math.max(100, (limit + offset) * 2);
-        
-        try {
-            const result = await supabase.rpc('hybrid_similarity_search', {
-                query_embedding: embedding,
-                visual_weight: 0.6,
-                text_weight: 0.4,
-                match_count: requestedCount
-            })
-            data = result.data
-            error = result.error
-            console.log('Using hybrid search for text query')
-        } catch (err) {
-            console.log('Hybrid search function not available, falling back to visual-only search')
-            // Fallback to visual-only search
+        const requestedCount = Math.max(100, (limit + offset) * 2)
+        const visualWeight = Number(req.body.visual_weight ?? 0.6)
+        const textWeight = Number(req.body.text_weight ?? 0.4)
+
+        console.log('Text search weights:', { visualWeight, textWeight })
+
+        if (visualWeight + textWeight <= 0) {
+            console.log('Invalid hybrid weights, using visual-only search')
             const result = await supabase.rpc('cosine_similarity_search', {
                 query_embedding: embedding,
                 match_count: requestedCount
             })
             data = result.data
             error = result.error
+        } else {
+            try {
+                const result = await supabase.rpc('hybrid_similarity_search', {
+                    query_embedding: embedding,
+                    visual_weight: visualWeight,
+                    text_weight: textWeight,
+                    match_count: requestedCount
+                })
+                if (result.error) {
+                    throw result.error
+                }
+                data = result.data
+                error = null
+                console.log('Using hybrid search for text query')
+            } catch (err) {
+                console.log('Hybrid search failed, falling back to visual-only search:', err.message || err)
+                const result = await supabase.rpc('cosine_similarity_search', {
+                    query_embedding: embedding,
+                    match_count: requestedCount
+                })
+                data = result.data
+                error = result.error
+            }
         }
-        
+
         console.log('Search results before filtering:', data?.length || 0)
 
         if (error) return res.status(500).json({ error: error.message })
@@ -350,10 +384,12 @@ app.post('/search/text', async (req, res) => {
                     ocrText = screenshot.screenshot_embeddings?.ocr_text || ''
                 }
             }
-            
+            const match = paginatedData[index] || {}
             return {
                 ...screenshot,
-                similarity: paginatedData[index]?.similarity || 0,
+                similarity: match.similarity || 0,
+                visual_similarity: match.visual_similarity || 0,
+                text_similarity: match.text_similarity || 0,
                 ocr_text: ocrText
             }
         })

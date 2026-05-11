@@ -33,8 +33,6 @@ const Tag = ({
     if (isResource) {
       e.preventDefault();
       setDropdownOpen(!dropdownOpen);
-    } else if (onClick) {
-      onClick(e);
     } else if (href) {
       navigate(href);
     }

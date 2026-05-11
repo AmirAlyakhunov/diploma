@@ -73,6 +73,13 @@ const AuthModal = ({ onClose }) => {
             </p>
             
             <div className="auth-modal-actions">
+               <button
+                type="button"
+                className="auth-button"
+                onClick={onClose}
+              >
+                Закрыть
+              </button>
               <button
                 type="button"
                 className="auth-button-secondary"
@@ -80,13 +87,6 @@ const AuthModal = ({ onClose }) => {
                 disabled={isLoading}
               >
                 Изменить email
-              </button>
-              <button
-                type="button"
-                className="auth-button"
-                onClick={onClose}
-              >
-                Закрыть
               </button>
             </div>
           </div>

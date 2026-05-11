@@ -140,7 +140,7 @@ const ImageUploadModal = ({ isOpen, onClose, onSearch }) => {
             <span className="material-symbols-rounded">
               photo
             </span>
-            <p>Перетащите, нажмите <br /> или вставьте изображение</p>
+            <p>Нажмите, перетащите <br /> или вставьте изображение</p>
           </div>
         )}
 
